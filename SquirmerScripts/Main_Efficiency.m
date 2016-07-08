@@ -25,13 +25,29 @@ for i=1:n
 
     speed = Ux/(B1/2);   %%%% swimming velocity non-dimensionalized by B1/2
 
-    efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed);
+    efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)*(B1/2)^2;
     Efficiencies(i) = efficiency;
 end
 
 %%Plot the efficiency vs nondimensional radius
 figure(1)
 plot(Radii, Efficiencies, 'o')
+title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
+xlabel('Nondimensional Radius (a/l_s)')
+ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
+saveas(gcf,'Efficiency 1.png')
 
 figure(2)
 semilogx(Radii, Efficiencies, 'o')
+title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
+xlabel('Log Scale Nondimensional Radius (a/l_s)')
+ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
+saveas(gcf,'Efficiency 2.png')
+
+figure(3)
+loglog(Radii, Efficiencies, 'o')
+title('Log-Log Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
+xlabel('Log Scale Nondimensional Radius (a/l_s)')
+ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
+saveas(gcf,'Efficiency 3.png')
+ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
