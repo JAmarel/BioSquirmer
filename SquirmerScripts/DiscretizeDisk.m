@@ -1,7 +1,7 @@
 function [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s)
 %Returns BlobsPerLayer and the coordinates of each blob for a single disk.
 %   Detailed explanation goes here
-NR = floor(a/s) + 1;  %%% number of layers along radial direction (+1 b/c of one blob that sits in the center)
+NR = round(a/s,0) + 1;  %%% number of layers along radial direction (+1 b/c of one blob that sits in the center)
 %%% floor rounds the number to the nearest integer less or equal to that number
 
 BlobsPerLayer = zeros([1, length(NR)]);
