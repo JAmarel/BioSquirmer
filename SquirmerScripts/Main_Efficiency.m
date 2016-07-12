@@ -18,7 +18,7 @@ for i=1:n
     [VxRim, VyRim, B1] = PrescribeWave(NRim);
     
     
-    [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
+    [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
     
     fx = fx/(B1/2); %Nondimensionalizing.
     fy = fy/(B1/2);
