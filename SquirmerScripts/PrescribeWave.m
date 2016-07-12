@@ -12,7 +12,7 @@ Angles    = zeros([NRim,1]);  %%% Angles corresponding to rim blobs.
 
 for i=1:NRim
     angle = (i-1) * 2 * pi/NRim;
-    VRimTheta(i) = B1 * sin(angle) + B2 * sin(2 * angle);
+    VRimTheta(i) = B1*sin(angle) + B2*sin(2 * angle);
     
     VxRim(i)  = -VRimTheta(i) * sin(angle); 
     VyRim(i)  = VRimTheta(i) * cos(angle);

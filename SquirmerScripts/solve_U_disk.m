@@ -18,7 +18,7 @@ N = length(xcoord);   %%% number of blobs in the disk
 %%% make sure these are columns
 VxRim=VxRim(:);             %%% x-component of velocity at the rim of the disk                
 VyRim=VyRim(:);             %%% y-component of velocity at the rim of the disk
-NRim;                  %%% number of blobs on the rim of the disk
+NRim;                       %%% number of blobs on the rim of the disk
 
 
 
