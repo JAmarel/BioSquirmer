@@ -1,5 +1,5 @@
 n = 20;
-Radii = logspace(-2,2,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
+Radii = logspace(-8,8,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
 Efficiencies = zeros([1, n]);
 ShellNumber = zeros([1, n]);
@@ -10,13 +10,22 @@ for i=1:n
     epsilon = s/8;       %%% radius of the blob
     
     [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
-    Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
     
+    Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
     NR = length(BlobsPerLayer); %%% Number of radial layers
     NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
     
     [VxRim, VyRim, B1] = PrescribeWave(NRim);
+    
+    
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
+    
+    fx = fx/(B1/2); %Nondimensionalizing.
+    fy = fy/(B1/2);
+    Ux = Ux/(B1/2);
+    Uy = Uy/(B1/2);
+    VxRim = VxRim/(B1/2);
+    VyRim = VyRim/(B1/2);
 
     FxRim = fx(end-NRim+1:end);
     FyRim = fy(end-NRim+1:end);
@@ -24,7 +33,7 @@ for i=1:n
     FxNet = sum(fx); %%% x-component of net force on squirmer
     FyNet = sum(fy); %%% y-component of net force on squirmer
 
-    speed = Ux/(B1/2);   %%%% swimming velocity non-dimensionalized by B1/2
+    speed = sqrt(Ux^2 + Uy^2);
 
     efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)*(B1/2)^2;
     Efficiencies(i) = efficiency;
