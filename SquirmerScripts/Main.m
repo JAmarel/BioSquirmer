@@ -87,8 +87,8 @@ efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 % hold on
 % plot(span_r/a, vy, 'bo', 'LineWidth', 3)
 % hold off
-%% plot the vector field in different inner layers
-for j = 1:NR-1 %%% all inner layers
+%% plot the forces on blobs in different layers
+for j = 1:NR %%% all layers
     NLayer = j; %%% layer number for which we'd like to plot the forces
     AnglesLayer = zeros([1, BlobsPerLayer(NLayer)]);
     for i = 1:BlobsPerLayer(NLayer)
