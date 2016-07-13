@@ -15,6 +15,16 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [fx, fy, Ux, Uy,W] = solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
+fx = fx/(B1/2); %Nondimensionalizing.
+fy = fy/(B1/2);
+Ux = Ux/(B1/2); %Now U,W, and V have no dimensions.
+Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
+                %those units cancel in efficiency calculation.
+W = W/(B1/2);
+VxRim = VxRim/(B1/2);
+VyRim = VyRim/(B1/2);
+
+
 FxRim = fx(end-NRim+1:end);
 FyRim = fy(end-NRim+1:end);
 

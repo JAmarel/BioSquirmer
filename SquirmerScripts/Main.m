@@ -28,13 +28,13 @@ efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 
 
 %Plot the position blobs by xcoord and ycoord
-figure(1)
-plot(xcoord, ycoord, 'o')
-daspect([1,1,1])
-hold on
-plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 1)
-axis off
-hold off
+% figure(1)
+% plot(xcoord, ycoord, 'o')
+% daspect([1,1,1])
+% hold on
+% plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 1)
+% axis off
+% hold off
 
 %% plot the forces in the outer layer of the disk
 % AnglesRim = zeros([1, NRim]);

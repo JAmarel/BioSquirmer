@@ -23,8 +23,9 @@ for i=1:n
     
     fx = fx/(B1/2); %Nondimensionalizing.
     fy = fy/(B1/2);
-    Ux = Ux/(B1/2);
-    Uy = Uy/(B1/2);
+    Ux = Ux/(B1/2); %Now U and V have no dimensions.
+    Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
+                    %those units cancel in efficiency calculation.
     VxRim = VxRim/(B1/2);
     VyRim = VyRim/(B1/2);
 
@@ -67,7 +68,7 @@ semilogx(Radii, Efficiencies, 'o')
 title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
 xlabel('Log Scale Nondimensional Radius (a/l_s)')
 ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-saveas(gcf,'Efficiency 2.png')
+%saveas(gcf,'Efficiency 2.png')
 
 % figure(3)
 % loglog(Radii, Efficiencies, 'o')

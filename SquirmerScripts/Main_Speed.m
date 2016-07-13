@@ -1,4 +1,4 @@
-%%Calculates/plots the speed for various beast radii
+%%Calculates/plots the speed for various beast radii without rotation
 n = 20;
 Radii = logspace(-1.5,3.5,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
@@ -30,10 +30,10 @@ for i=1:n
     Speeds(i) = speed;
 end
 
-figure(2)
-semilogx(Radii, Speeds, 'o')
-title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
-xlabel('Log Scale Nondimensional Radius (a/l_s)')
-ylabel('Nondimensional Swimming Speed')
+% figure(2)
+% semilogx(Radii, Speeds, 'o')
+% title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
+% xlabel('Log Scale Nondimensional Radius (a/l_s)')
+% ylabel('Nondimensional Swimming Speed')
 % saveas(gcf,'SpeedvsRadius.png')
 
