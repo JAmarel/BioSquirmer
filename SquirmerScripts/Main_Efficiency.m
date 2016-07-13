@@ -77,15 +77,15 @@ saveas(gcf,'Efficiency 2.png')
 % saveas(gcf,'Efficiency 3.png')
 % ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
 
-figure(4)
-plot(ShellNumber, Efficiencies, 'o')
-x = [0.5 0.5];
-y = [0.3 0.6];
-annotation('textarrow',x,y,'String','Increasing Beast Radius ','FontSize',7)
-xlim([10 15])
-title('Swimming Efficiency vs Number of Blob Shells','FontSize',16,'FontWeight','bold')
-xlabel('Number of Blob Shells')
-ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-saveas(gcf,'ShellRound.png')
+% figure(4)
+% plot(ShellNumber, Efficiencies, 'o')
+% x = [0.5 0.5];
+% y = [0.3 0.6];
+% annotation('textarrow',x,y,'String','Increasing Beast Radius ','FontSize',7)
+% xlim([10 15])
+% title('Swimming Efficiency vs Number of Blob Shells','FontSize',16,'FontWeight','bold')
+% xlabel('Number of Blob Shells')
+% ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
+% saveas(gcf,'ShellRound.png')
 
 
