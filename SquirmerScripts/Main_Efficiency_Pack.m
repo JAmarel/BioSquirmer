@@ -1,21 +1,21 @@
 %Looking for swimming efficiency dependence on number of rim blobs/packing density
 
-n = 10;
+n = 40;
 
 a = 10;
-epsilon = a/100; %=.1
+s = 0.08 * a;          %%% spacing between neighboring blobs
+epsilon = s/8;       %%% radius of the blob
 
-
-BlobSpacing = linspace(2.1*epsilon,5*epsilon,n);
+CircumSpacing = linspace(s/(3),1.2*s,n); %slight overlap if d < e/2
 
 Efficiencies = zeros([1, n]);
 RimBlobs = zeros([1,n]);
 
 for i=1:n
         %%% spacing between neighboring blobs
-    s = BlobSpacing(i);          %%% blob spacing
+    d = CircumSpacing(i);          %%% blob spacing
       
-    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk_Pack(a,s,d);
     
     Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
     NR = length(BlobsPerLayer); %%% Number of radial layers
@@ -44,7 +44,7 @@ for i=1:n
     efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)*(B1/2)^2;
     Efficiencies(i) = efficiency;
     RimBlobs(i) = NRim;
-    BlobSpacing(i) = s;
+    CircumSpacing(i) = d;
     
 %%Plot the position blobs by xcoord and ycoord
 % figure(i+3)
@@ -66,14 +66,14 @@ plot(RimBlobs, Efficiencies, 'o')
 title('Swimming Efficiency vs. Number of Rim Blobs','FontSize',16,'FontWeight','bold')
 xlabel('Number of Rim Blobs')
 ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-% saveas(gcf,'Efficiency 1.png')
+saveas(gcf,'Efficiency vs Nrim.png')
 
 figure(2)
-plot(BlobSpacing, Efficiencies, 'o')
+plot(CircumSpacing, Efficiencies, 'o')
 title('Swimming Efficiency vs. Blob Spacing','FontSize',16,'FontWeight','bold')
-xlabel('Nondimensional Blob Spacing [a/l_s]')
+xlabel('Circumferential Blob Spacing Nondimensional [a/l_s]')
 ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-%saveas(gcf,'Efficiency 2.png')
+saveas(gcf,'Efficiency vs d.png')
 
 % figure(3)
 % loglog(Radii, Efficiencies, 'o')
