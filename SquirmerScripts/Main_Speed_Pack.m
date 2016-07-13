@@ -1,16 +1,22 @@
-%%Calculates/plots the efficiency for various beast radii
-n = 5;
-Radii = logspace(-8,8,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
+%Looking for swimming speed dependence on number of rim blobs/packing density
+
+n = 20;
+
+a = 10;
+s = 0.08 * a;          %%% spacing between neighboring blobs
+epsilon = s/8;       %%% radius of the blob
+
+CircumSpacing = linspace(s/(3),1.2*s,n); %slight overlap if d < e/2
 
 Efficiencies = zeros([1, n]);
-ShellNumber = zeros([1, n]);
+Blobs = zeros([1,n]);
+Speeds = zeros([1, n]);
 
 for i=1:n
-    a = Radii(i);
-    s = 0.08 * a;          %%% spacing between neighboring blobs
-    epsilon = s/8;       %%% radius of the blob
-    
-    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+        %%% spacing between neighboring blobs
+    d = CircumSpacing(i);          %%% blob spacing
+      
+    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk_Pack(a,s,d);
     
     Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
     NR = length(BlobsPerLayer); %%% Number of radial layers
@@ -23,9 +29,8 @@ for i=1:n
     
     fx = fx/(B1/2); %Nondimensionalizing.
     fy = fy/(B1/2);
-    Ux = Ux/(B1/2); %Now U and V have no dimensions.
-    Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
-                    %those units cancel in efficiency calculation.
+    Ux = Ux/(B1/2);
+    Uy = Uy/(B1/2);
     VxRim = VxRim/(B1/2);
     VyRim = VyRim/(B1/2);
 
@@ -39,7 +44,9 @@ for i=1:n
 
     efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)*(B1/2)^2;
     Efficiencies(i) = efficiency;
-    ShellNumber(i) = NR;
+    Blobs(i) = Nblobs;
+    CircumSpacing(i) = d;
+    Speeds(i) = speed;
     
 %%Plot the position blobs by xcoord and ycoord
 % figure(i+3)
@@ -56,19 +63,19 @@ for i=1:n
 end
 
 %%Plot the efficiency vs nondimensional radius
-% figure(1)
-% plot(Radii, Efficiencies, 'o')
-% title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
-% xlabel('Nondimensional Radius (a/l_s)')
-% ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-% saveas(gcf,'Efficiency 1.png')
+figure(1)
+plot(Blobs, Speeds, 'o')
+title('Swimming Speed vs. Total Number of Blobs','FontSize',16,'FontWeight','bold')
+xlabel('Number of Blobs in Beast')
+ylabel('Nondimensional Speed')
+%saveas(gcf,'Efficiency vs Nrim.png')
 
-figure(2)
-semilogx(Radii, Efficiencies, 'o')
-title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
-xlabel('Log Scale Nondimensional Radius (a/l_s)')
-ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-%saveas(gcf,'Efficiency 2.png')
+% figure(2)
+% plot(CircumSpacing, Speeds, 'o')
+% title('Swimming Speed vs. Blob Spacing','FontSize',16,'FontWeight','bold')
+% xlabel('Circumferential Blob Spacing Nondimensional [a/l_s]')
+% ylabel('Nondimensional Speed')
+% %saveas(gcf,'Efficiency vs d.png')
 
 % figure(3)
 % loglog(Radii, Efficiencies, 'o')
@@ -77,16 +84,5 @@ ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
 % ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
 % saveas(gcf,'Efficiency 3.png')
 % ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
-
-% figure(4)
-% plot(ShellNumber, Efficiencies, 'o')
-% x = [0.5 0.5];
-% y = [0.3 0.6];
-% annotation('textarrow',x,y,'String','Increasing Beast Radius ','FontSize',7)
-% xlim([10 15])
-% title('Swimming Efficiency vs Number of Blob Shells','FontSize',16,'FontWeight','bold')
-% xlabel('Number of Blob Shells')
-% ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-% saveas(gcf,'ShellRound.png')
 
 

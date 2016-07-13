@@ -1,6 +1,6 @@
 %Looking for swimming efficiency dependence on number of rim blobs/packing density
 
-n = 40;
+n = 5;
 
 a = 10;
 s = 0.08 * a;          %%% spacing between neighboring blobs
