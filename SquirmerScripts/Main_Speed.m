@@ -30,10 +30,10 @@ for i=1:n
     Speeds(i) = speed;
 end
 
-% figure(2)
-% semilogx(Radii, Speeds, 'o')
-% title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
-% xlabel('Log Scale Nondimensional Radius (a/l_s)')
-% ylabel('Nondimensional Swimming Speed')
-% saveas(gcf,'SpeedvsRadius.png')
+figure(2)
+semilogx(Radii, Speeds, 'o')
+title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
+xlabel('Log Scale Nondimensional Radius (a/l_s)')
+ylabel('Nondimensional Swimming Speed')
+%saveas(gcf,'SpeedvsRadius.png')
 

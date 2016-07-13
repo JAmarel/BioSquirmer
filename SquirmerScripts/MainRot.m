@@ -48,16 +48,16 @@ efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 % hold off
 
 %% plot the forces in the outer layer of the disk
-AnglesRim = zeros([1, NRim]);
-for i = 1:NRim
-    AnglesRim(i) = (i-1) * 2 * pi/NRim;
-end
-
-figure(2)
-plot(AnglesRim, fx(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
-hold on
-plot(AnglesRim, fy(Nblobs - NRim + 1:end), 'bo', 'LineWidth', 3)
-hold off
+% AnglesRim = zeros([1, NRim]);
+% for i = 1:NRim
+%     AnglesRim(i) = (i-1) * 2 * pi/NRim;
+% end
+% 
+% figure(2)
+% plot(AnglesRim, fx(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
+% hold on
+% plot(AnglesRim, fy(Nblobs - NRim + 1:end), 'bo', 'LineWidth', 3)
+% hold off
 
 %% Plot vector field   
 %  figure(3)
