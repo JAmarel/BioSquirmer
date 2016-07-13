@@ -1,5 +1,5 @@
 function efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
-%CALCEFFICIENCY Summary of this function goes here
+%Ppull/Pswim
 %   Detailed explanation goes here
 Pswim = dot(FxRim,VxRim) + dot(FyRim,VyRim);
 

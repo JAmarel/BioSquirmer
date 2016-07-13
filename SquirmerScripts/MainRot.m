@@ -1,9 +1,8 @@
-%% Single Squirmer. No Rotation.
+%% Single squirmer with rotation
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
-
-epsilon = a/100;       %%% radius of the blob. Careful to avoid overlap
-s = 5*epsilon;       %%% spacing between neighboring blobs
+s= 0.1 * a;          %%% spacing between neighboring blobs
+epsilon = s/8;       %%% radius of the blob
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
@@ -14,41 +13,43 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
 
-[fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
+[fx, fy, Ux, Uy,W] = solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
 FxRim = fx(end-NRim+1:end);
 FyRim = fy(end-NRim+1:end);
 
-FxNet = sum(fx) %%% x-component of net force on squirmer
-FyNet = sum(fy) %%% y-component of net force on squirmer
+FxNet = sum(fx); %%% x-component of net force on squirmer
+FyNet = sum(fy); %%% y-component of net force on squirmer
+
+TorqueNet = dot(xcoord,fy.') - dot(ycoord,fx.'); % Should be 0.
      
 speed = sqrt(Ux^2 + Uy^2);
 
 efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 
 
-%Plot the position blobs by xcoord and ycoord
-figure(1)
-plot(xcoord, ycoord, 'o')
-daspect([1,1,1])
-hold on
-plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 1)
-axis off
-hold off
-
-%% plot the forces in the outer layer of the disk
-% AnglesRim = zeros([1, NRim]);
-% for i = 1:NRim
-%     AnglesRim(i) = (i-1) * 2 * pi/NRim;
-% end
-% 
-% figure(2)
-% plot(AnglesRim, fx(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
+%%Plot the position blobs by xcoord and ycoord
+% figure(1)
+% plot(xcoord, ycoord, 'o')
+% daspect([1,1,1])
 % hold on
-% plot(AnglesRim, fy(Nblobs - NRim + 1:end), 'bo', 'LineWidth', 3)
+% plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
+% axis off
 % hold off
 
-%% Plot vector field   %Dimensions may be wrong in here. 
+%% plot the forces in the outer layer of the disk
+AnglesRim = zeros([1, NRim]);
+for i = 1:NRim
+    AnglesRim(i) = (i-1) * 2 * pi/NRim;
+end
+
+figure(2)
+plot(AnglesRim, fx(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
+hold on
+plot(AnglesRim, fy(Nblobs - NRim + 1:end), 'bo', 'LineWidth', 3)
+hold off
+
+%% Plot vector field   
 %  figure(3)
 %  rectangle('Position',[-a, -a, 2*a, 2*a],...
 %            'Curvature',[1,1],...
@@ -89,8 +90,8 @@ hold off
 % hold on
 % plot(span_r/a, vy, 'bo', 'LineWidth', 3)
 % hold off
-%% plot the forces on blobs in different layers
-% for j = 1:NR %%% all layers
+%% plot the forces in different inner layers
+% for j = 1:NR-1 %%% all inner layers
 %     NLayer = j; %%% layer number for which we'd like to plot the forces
 %     AnglesLayer = zeros([1, BlobsPerLayer(NLayer)]);
 %     for i = 1:BlobsPerLayer(NLayer)

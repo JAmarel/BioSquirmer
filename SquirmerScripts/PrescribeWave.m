@@ -1,5 +1,5 @@
 function [VxRim, VyRim, B1] = PrescribeWave(NRim)
-%PRESCRIBEWAVE Summary of this function goes here
+%Prescribes single squirmer wave
 %   Detailed explanation goes here
 
 B1 = 0.1;            %%% tangential velocity strength (streaming)
