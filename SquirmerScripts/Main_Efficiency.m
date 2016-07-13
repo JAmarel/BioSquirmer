@@ -1,3 +1,4 @@
+%%Calculates/plots the efficiency for various beast radii
 n = 20;
 Radii = logspace(-8,8,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
