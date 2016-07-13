@@ -1,7 +1,8 @@
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
-s= 0.1 * a;          %%% spacing between neighboring blobs
-epsilon = s/8;       %%% radius of the blob
+
+epsilon = a/100;       %%% radius of the blob. Careful to avoid overlap
+s = 5*epsilon;       %%% spacing between neighboring blobs
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
@@ -25,14 +26,14 @@ speed = sqrt(Ux^2 + Uy^2);
 efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 
 
-%%Plot the position blobs by xcoord and ycoord
-% figure(1)
-% plot(xcoord, ycoord, 'o')
-% daspect([1,1,1])
-% hold on
-% plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 3)
-% axis off
-% hold off
+%Plot the position blobs by xcoord and ycoord
+figure(1)
+plot(xcoord, ycoord, 'o')
+daspect([1,1,1])
+hold on
+plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 1)
+axis off
+hold off
 
 %% plot the forces in the outer layer of the disk
 % AnglesRim = zeros([1, NRim]);
@@ -46,7 +47,7 @@ efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 % plot(AnglesRim, fy(Nblobs - NRim + 1:end), 'bo', 'LineWidth', 3)
 % hold off
 
-%% Plot vector field   
+%% Plot vector field   %Dimensions may be wrong in here. 
 %  figure(3)
 %  rectangle('Position',[-a, -a, 2*a, 2*a],...
 %            'Curvature',[1,1],...
@@ -88,31 +89,31 @@ efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
 % plot(span_r/a, vy, 'bo', 'LineWidth', 3)
 % hold off
 %% plot the forces on blobs in different layers
-for j = 1:NR %%% all layers
-    NLayer = j; %%% layer number for which we'd like to plot the forces
-    AnglesLayer = zeros([1, BlobsPerLayer(NLayer)]);
-    for i = 1:BlobsPerLayer(NLayer)
-        AnglesLayer(i) = (i-1) * 2 * pi/BlobsPerLayer(NLayer);
-    end
-    %%% 
-    start = 0;
-    for i = 1: NLayer - 1
-        start = start + BlobsPerLayer(i);    
-    end
-    finish = start + BlobsPerLayer(NLayer);
-
-    BlobsPerLayer(NLayer);
-    length(fx(start+1:finish));
-
-    figure(j)
-    plot(AnglesLayer, fx(start+1 : finish), 'ro', 'LineWidth', 2)
-    hold all
-    plot(AnglesLayer, fy(start+1:finish), 'bo', 'LineWidth', 2)
-    titlestr = strcat({'Forces on Blobs at NR = '},{' '},{num2str(j)});
-    title(titlestr);
-    xlabel('Blob Coordinate Angle (Radians)')
-    ylabel('Blob Force')
-    legend('f_x','f_y')
-    hold off
-end
+% for j = 1:NR %%% all layers
+%     NLayer = j; %%% layer number for which we'd like to plot the forces
+%     AnglesLayer = zeros([1, BlobsPerLayer(NLayer)]);
+%     for i = 1:BlobsPerLayer(NLayer)
+%         AnglesLayer(i) = (i-1) * 2 * pi/BlobsPerLayer(NLayer);
+%     end
+%     %%% 
+%     start = 0;
+%     for i = 1: NLayer - 1
+%         start = start + BlobsPerLayer(i);    
+%     end
+%     finish = start + BlobsPerLayer(NLayer);
+% 
+%     BlobsPerLayer(NLayer);
+%     length(fx(start+1:finish));
+% 
+%     figure(j)
+%     plot(AnglesLayer, fx(start+1 : finish), 'ro', 'LineWidth', 2)
+%     hold all
+%     plot(AnglesLayer, fy(start+1:finish), 'bo', 'LineWidth', 2)
+%     titlestr = strcat({'Forces on Blobs at NR = '},{' '},{num2str(j)});
+%     title(titlestr);
+%     xlabel('Blob Coordinate Angle (Radians)')
+%     ylabel('Blob Force')
+%     legend('f_x','f_y')
+%     hold off
+% end
 toc

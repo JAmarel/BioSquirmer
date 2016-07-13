@@ -6,7 +6,7 @@ ShellNumber = zeros([1, n]);
 
 for i=1:n
     a = Radii(i);
-    s= 0.08 * a;          %%% spacing between neighboring blobs
+    s = 0.08 * a;          %%% spacing between neighboring blobs
     epsilon = s/8;       %%% radius of the blob
     
     [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);

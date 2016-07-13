@@ -11,7 +11,7 @@ BlobsPerLayer = zeros([1, NR]);
 
 BlobsPerLayer(1) = 1; %%% one blob in the center of the circle
 for i = 2: NR
-    BlobsPerLayer(i) = round( 2 * pi * (i - 1) ); 
+    BlobsPerLayer(i) = round( (2 * pi * (i - 1))); 
 end
 Nblobs = sum(BlobsPerLayer);
 %%% we need to find the coordinates of the blobs

@@ -1,6 +1,7 @@
 function V = VX_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y)
 
-%%% This routine computes x-component of the fluid velocity at positions
+%%% This routine computes x-component of the fluid velocity at positions x
+%%% and y
 %%% xcoord and ycoord are arrays that contain coordinates of the blobs
 %%% spread out on the disk
 %%% fx and fy are x- and y- components of Levineslets distributed on the
