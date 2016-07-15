@@ -1,7 +1,7 @@
-function [fx, fy, Ux, Uy, W, Matrix] = ...
-    solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim)
+function [fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix] = ...
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
 
-%%% Now including rotation. M = 5x5
+%%% Now including rotation and enclosure. M = 7x7
 
 %%% angle = an array that contains instantenous angular position of
 %%% point-like forces on the circumference
@@ -11,13 +11,16 @@ function [fx, fy, Ux, Uy, W, Matrix] = ...
 %%% We assign the vector field distribution on the boundary of the circle
 
 
-N = length(xcoord);   %%% number of blobs in the disk
+N = length([xcoord x_Enc]);   %%% number of blobs everywhere
 %%% make sure these are columns
 VxRim=VxRim(:);             %%% x-component of velocity at the rim of the disk                
 VyRim=VyRim(:);             %%% y-component of velocity at the rim of the disk
 NRim;                       %%% number of blobs on the rim of the disk
+NBlobs = length(xcoord); %%% Number of beast blobs
+NEnc = length(x_Enc);    %%% Number of enclosure blobs
 
-
+xvect = [x_Enc xcoord]; %%% Vectors containing all blob coordinates
+yvect = [y_Enc ycoord];
 
 
 %%% precompute distances between points i and j in the disk 
@@ -32,9 +35,9 @@ chihat_y = zeros([N, N]);    %%% y-component of unit vector from i-th blob to j-
 for i = 1 : N  %%% runs over blobs, the last Nrim blobs are on the disks's rim
     for j = 1 : N  %%% runs over blobs
         if ( i ~= j )
-            distance(i,j) = sqrt((xcoord(i) - xcoord(j))^2 + (ycoord(i) - ycoord(j))^2);
-            chihat_x(i,j) = (xcoord(i) - xcoord(j))/distance(i,j);
-            chihat_y(i,j) = (ycoord(i) - ycoord(j))/distance(i,j);
+            distance(i,j) = sqrt((xvect(i) - xvect(j))^2 + (yvect(i) - yvect(j))^2);
+            chihat_x(i,j) = (xvect(i) - xvect(j))/distance(i,j);
+            chihat_y(i,j) = (yvect(i) - yvect(j))/distance(i,j);
 
             alpha_par(i,j)  = mob_par_approx(distance(i, j));
             alpha_perp(i,j) = mob_perp_approx(distance(i, j));
@@ -102,15 +105,19 @@ M21 = zeros([N, N]);  %%% y-component of the vector field at point i due to x-le
  %%% Now we need to form one big matrix of the system of equations
  
 %format short       
-Matrix = [M11 M12 -ones([N,1]) zeros([N,1]) ycoord.'; M21 M22 zeros([N,1]) -ones([N,1]) -xcoord.'; ...
-           ones([1, N]) zeros([1, N]) 0 0 0; zeros([1, N]) ones([1, N]) 0 0 0; ycoord -xcoord 0 0 0];
-
+Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc,1]); ycoord.'] [-ones([NEnc,1]); zeros([NBlobs,1])] zeros([N,1]); ...
+          M21 M22 zeros([N,1]) [zeros([NEnc,1]); -ones([NBlobs,1])] [zeros([NEnc,1]); -xcoord.'] zeros([N,1]) [-ones([NEnc,1]); zeros([NBlobs,1])]; ...
+          -[zeros([1,NEnc]) ones([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
+          zeros([1, N]) -[zeros([1,NEnc]) ones([1, NBlobs])] 0 0 0 0 0; ...
+          [zeros([1,NEnc]) ycoord] [zeros([1,NEnc]) -xcoord] 0 0 0 0 0; ...
+          -[ones([1,NEnc]) zeros([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
+          zeros([1, N]) -[ones([1,NEnc]) zeros([1, NBlobs])] 0 0 0 0 0];
        
  %scondition = cond(Matrix);
  
+ c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0; 0 ; 0];
+ % [VxInner;VxRim;VyInner;VyRim;FxBeast;FyBeast;TorqueBeast; Fx_Enc, Fy_Enc]
 
- c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0];
- % [VxInner;VxRim;VyInner;VyRim;FxBeast;FyBeast]
  
  %[variables] = Gauss_method(2 * N + 2, Matrix, c_coefs);
  
@@ -121,6 +128,7 @@ Matrix = [M11 M12 -ones([N,1]) zeros([N,1]) ycoord.'; M21 M22 zeros([N,1]) -ones
  Ux = variables(2*N + 1);
  Uy = variables(2*N + 2);
  W  = variables(2*N + 3);
-
+ Ux_Enc = variables(2*N + 4);
+ Uy_Enc = variables(2*N + 5);
 
 end

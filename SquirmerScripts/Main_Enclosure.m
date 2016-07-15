@@ -17,10 +17,15 @@ theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
 Nblobs = sum(BlobsPerLayer);
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
+[VxRim, VyRim, B1] = PrescribeWave(NRim);
+
 %Place beast somewhere in enclosure (r,phi) with head facing direction (theta_o).
 [xcoord, ycoord, x_head, y_head] = Orient_disk(xcoord, ycoord, r_o,phi_o, theta_o, BlobsPerLayer);
 
 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d); %Enclosure Blob Coordinates
+
+[fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix] = ...
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
 
 %Plot the position of all blobs
