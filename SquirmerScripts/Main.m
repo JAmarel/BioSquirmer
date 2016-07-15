@@ -1,6 +1,6 @@
 %% Single Squirmer. No Rotation.
 tic
-a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 10^7;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
@@ -13,7 +13,7 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
 
-[fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
+[fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
 fx = fx/(B1/2); %Nondimensionalizing.
 fy = fy/(B1/2);
@@ -26,12 +26,13 @@ VyRim = VyRim/(B1/2);
 FxRim = fx(end-NRim+1:end);
 FyRim = fy(end-NRim+1:end);
 
-FxNet = sum(fx) %%% x-component of net force on squirmer
-FyNet = sum(fy) %%% y-component of net force on squirmer
+FxNet = sum(fx); %%% x-component of net force on squirmer
+FyNet = sum(fy); %%% y-component of net force on squirmer
      
 speed = sqrt(Ux^2 + Uy^2);
 
-efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
+efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed);
+eigenvalues = eig(Matrix);
 
 
 %Plot the position blobs by xcoord and ycoord

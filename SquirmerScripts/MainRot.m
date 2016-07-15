@@ -13,12 +13,12 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
 
-[fx, fy, Ux, Uy,W] = solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
+[fx, fy, Ux, Uy,W, Matrix] = solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
 fx = fx/(B1/2); %Nondimensionalizing.
 fy = fy/(B1/2);
 Ux = Ux/(B1/2); %Now U,W, and V have no dimensions.
-Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
+Uy = Uy/(B1/2); %f carries dimensions [1/4pi eta]
                 %those units cancel in efficiency calculation.
 W = W/(B1/2);
 VxRim = VxRim/(B1/2);
@@ -35,7 +35,10 @@ TorqueNet = dot(xcoord,fy.') - dot(ycoord,fx.'); % Should be 0.
      
 speed = sqrt(Ux^2 + Uy^2);
 
-efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed)
+efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed);
+
+eigenvalues = eig(Matrix);
+
 
 
 %%Plot the position blobs by xcoord and ycoord

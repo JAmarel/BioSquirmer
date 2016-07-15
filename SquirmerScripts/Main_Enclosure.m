@@ -5,7 +5,7 @@ s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
 R = 10*a; %%%Radius of enclosure
-d = s;    %%%Circumferential Enclosure Blob Spacing
+d = 5*s;    %%%Circumferential Enclosure Blob Spacing
 
 r = 3*a; %%% Radial coordinate of beast from center of enclosure
 phi = pi/2; %%%Angle coordinate of beast from center of enclosure
@@ -14,12 +14,12 @@ theta_o = pi/4;   %%% Beast intial orientation
 x_o = r*cos(phi); %%%Beast initial x position
 y_o = r*sin(phi); %%%Initial y position
 
-[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s); %Beast Blob Coordinates
+%Blob coordinates from beast center
+[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
-% BlobDistance = sqrt(xcoord.^2 + ycoord.^2); %trying orientation. This
-% failed
-% xcoord = BlobDistance*cos(theta_o);
-% ycoord = BlobDistance*sin(theta_o);
+%Get Angles from arctan
+BlobDistance = sqrt(xcoord.^2 + ycoord.^2); %Blob distances from beast center
+
 
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
@@ -36,10 +36,10 @@ y_head = ycoord(end - NRim + 1);
 
 %Plot the position of all blobs
 figure(1)
-plot(xcoord, ycoord, 'o')
+plot(xcoord, ycoord, '.')
 daspect([1,1,1])
 hold on
-plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'ro', 'LineWidth', 1)
+plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.', 'LineWidth', 1)
 plot(x_Enc, y_Enc, 'go', 'LineWidth', 1)
 plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
