@@ -1,10 +1,10 @@
 tic
 
-a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;       %%% radius of blobs
 
-R = 10*a;   %%%Radius of enclosure
+R = 5*a;   %%%Radius of enclosure
 d = 5*s;    %%%Circumferential Enclosure Blob Spacing
 
 r_o = 3*a;          %%% Radial coordinate of beast cm from center of enclosure
@@ -24,9 +24,10 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d); %Enclosure Blob Coordinates
 
-[fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix] = ...
+[fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
+toc
 
 %Plot the position of all blobs
 figure(1)

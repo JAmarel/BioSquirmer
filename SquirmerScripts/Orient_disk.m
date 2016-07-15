@@ -25,6 +25,8 @@ BlobDistance = sqrt(xcoord.^2 + ycoord.^2); %Blob distances from beast center
 
 xcoord = BlobDistance.*cos(Angles);
 ycoord = BlobDistance.*sin(Angles);
+xcoord(1) = 0;
+ycoord(1) = 0;
 
 %Translate to CM
 xcoord = xcoord + x_o;
