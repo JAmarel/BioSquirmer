@@ -14,11 +14,13 @@ theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
 %Blob coordinates from beast center
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
+Nblobs = sum(BlobsPerLayer);
+NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
+
 %Place beast somewhere in enclosure (r,phi) with head facing direction (theta_o).
 [xcoord, ycoord, x_head, y_head] = Orient_disk(xcoord, ycoord, r_o,phi_o, theta_o, BlobsPerLayer);
 
 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d); %Enclosure Blob Coordinates
-
 
 
 %Plot the position of all blobs

@@ -7,13 +7,13 @@ y_o = r_o*sin(phi_o); %%%Initial y position
 Angles = zeros([1, length(xcoord)]);
 %Get Angles from arctan. [-pi/2,pi/2]
 for i=1:length(xcoord)
-    if xcoord(i)>=0 & ycoord(i)>=0
+    if xcoord(i)>=0 && ycoord(i)>=0
         Angles(i) = atan(abs(ycoord(i)/xcoord(i)));
-    elseif xcoord(i)<0 & ycoord(i)>=0
+    elseif xcoord(i)<0 && ycoord(i)>=0
         Angles(i) = pi - atan(abs(ycoord(i)/xcoord(i)));
-    elseif xcoord(i)<0 & ycoord(i)<0
+    elseif xcoord(i)<0 && ycoord(i)<0
         Angles(i) = pi + atan(abs(ycoord(i)/xcoord(i)));
-    elseif xcoord(i)>=0 & ycoord(i)<0
+    elseif xcoord(i)>=0 && ycoord(i)<0
         Angles(i) = 2*pi - atan(abs(ycoord(i)/xcoord(i)));
     end
 end
