@@ -5,8 +5,9 @@ x_o = r_o*cos(phi_o); %%%Beast CM initial x position
 y_o = r_o*sin(phi_o); %%%Initial y position
 
 Angles = zeros([1, length(xcoord)]);
+Angles(1) = 0;
 %Get Angles from arctan. [-pi/2,pi/2]
-for i=1:length(xcoord)
+for i=2:length(xcoord)
     if xcoord(i)>=0 && ycoord(i)>=0
         Angles(i) = atan(abs(ycoord(i)/xcoord(i)));
     elseif xcoord(i)<0 && ycoord(i)>=0
