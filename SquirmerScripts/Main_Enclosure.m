@@ -2,7 +2,7 @@ tic
 
 %Simulation
 T = 100;
-dt = .25;
+dt = .2;
 
 
 %Discretization
@@ -12,10 +12,10 @@ epsilon = s/8;       %%% radius of blobs
 
 %Enclosure
 R = 5*a;   %%%Radius of enclosure
-d = 5*s;    %%%Circumferential Enclosure Blob Spacing
+d = 2*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 3*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = 4*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/2;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = 2*pi/4;   %%% Beast intial orientation (head direction)
 
@@ -42,7 +42,7 @@ NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost beast layer
 
 toc
 
-%Plotting
+%%Plotting
 figure(1)
 plot(x_cm_history(1), y_cm_history(1), 'ko','LineWidth', 1) %Begin at black
 hold on
