@@ -1,8 +1,8 @@
 tic
 
 %Simulation
-T = 100;
-dt = .25;
+T = 20;
+dt = 1;
 
 
 %Discretization
@@ -19,21 +19,24 @@ r_o = 3*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/2;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = 2*pi/4;   %%% Beast intial orientation (head direction)
 
-%Blob coordinates from beast center
+%Coordinates of beast blobs in beast frame.
+%Beast frame has its head on the x axis at y = 0.
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
-%Enclosure Blob Coordinates. Enclosure is center at the origin.
+Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
+NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
+
+%Enclosure Blob Coordinates from the origin in the enclosure frame.
 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d); 
 
 
-Nblobs = sum(BlobsPerLayer); %%% number of blobs in the beast
-NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost beast layer
+%Prescribe wave in the enclosure frame, taking into account theta_o rotation of the head.
+[VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,theta_o);
 
-
-[VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,theta_o); %This needs to be recalculated to account for theta_o and dt's.
-
-%Place beast somewhere in enclosure (r_o,phi_o) with head facing direction (theta_o).
+%Translate beast coordinates with (r_o, phi_o) and head facing direction (theta_o)
+%Into the enclosure frame
 [xcoord, ycoord, x_head, y_head] = Orient_disk(xcoord, ycoord, r_o, phi_o, theta_o, BlobsPerLayer);
+%xcoord and ycoord now label beast blob coordinates in the enclosure frame.
 
 
 [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, Angles, x_cm_history, y_cm_history] = ...

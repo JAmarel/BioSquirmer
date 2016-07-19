@@ -23,7 +23,7 @@ xvect = [x_Enc xcoord]; %%% Vectors containing all blob coordinates
 yvect = [y_Enc ycoord];
 
 
-%%% precompute distances between points i and j in the disk 
+%%% precompute distances between points i and j
 distance   = zeros([N, N]);  %%% distance between i-th and j-th blob
 alpha_par  = zeros([N, N]);
 alpha_perp = zeros([N, N]);
@@ -32,8 +32,8 @@ chihat_y = zeros([N, N]);    %%% y-component of unit vector from i-th blob to j-
 
 
 %Euler = - psi(1); 
-for i = 1 : N  %%% runs over blobs, the last Nrim blobs are on the disks's rim
-    for j = 1 : N  %%% runs over blobs
+for i = 1 : N  %%% Pick a blob
+    for j = 1 : N  %%% run over all other blobs
         if ( i ~= j )
             distance(i,j) = sqrt((xvect(i) - xvect(j))^2 + (yvect(i) - yvect(j))^2);
             chihat_x(i,j) = (xvect(i) - xvect(j))/distance(i,j);
@@ -116,7 +116,7 @@ Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc
  %scondition = cond(Matrix);
  
  c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0; 0 ; 0];
- % [VxInner;VxRim;VyInner;VyRim;FxBeast;FyBeast;TorqueBeast; Fx_Enc, Fy_Enc]
+ % [VxEnclosure; VxInner; VxRim; VyEnclosure; VyInner; VyRim; FxBeast; FyBeast; TorqueBeast; Fx_Enc, Fy_Enc]
 
  
  %[variables] = Gauss_method(2 * N + 2, Matrix, c_coefs);

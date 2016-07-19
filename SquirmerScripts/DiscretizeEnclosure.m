@@ -4,17 +4,16 @@ function [xcoord, ycoord] = DiscretizeEnclosure(R,d)
 %   d is the circumferential blob spacing
 
 Nblobs = round(2*pi*R/d,0); %Packs as many blobs in as possible according to R and d.
-%%% we need to find the coordinates of the blobs
-xcoord = zeros([1, Nblobs]);
-ycoord = xcoord;
 
-xcoord(1)=0; %%% blob in the center of the circle
-ycoord(1)=0; %%% blob in the center of the circle
+
+xcoord = zeros([1, Nblobs]);
+ycoord = zeros([1, Nblobs]);
 
 delta_phi = 2*pi/Nblobs;
-        
+
+% Find the coordinates of the blobs  
 for i=1:Nblobs
-    xcoord(i) =  R * cos((i-1) * delta_phi); 
+    xcoord(i) =  R * cos((i-1) * delta_phi); %(i-1) to begin at angle 0.
     ycoord(i) =  R * sin((i-1) * delta_phi);
 end
 end

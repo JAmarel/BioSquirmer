@@ -18,12 +18,12 @@ end
 Nblobs = sum(BlobsPerLayer);
 %%% we need to find the coordinates of the blobs
 xcoord = zeros([1, Nblobs]);
-ycoord = xcoord;
+ycoord = zeros([1, Nblobs]);
 
 xcoord(1)=0; %%% blob in the center of the circle
 ycoord(1)=0; %%% blob in the center of the circle
 
-index = 2;
+index = 2; % index equivalent to i?
 for i=2:NR
     for j=1:BlobsPerLayer(i)
         delta_phi = 2*pi/BlobsPerLayer(i);

@@ -3,7 +3,7 @@ function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history
 
 % T = Total simulation time
 % dt = Time steps
-% xcoord, ycoord = Initial beast (blob) coordinates from origin
+% xcoord, ycoord = Initial beast (blob) coordinates in enclosure frame
 % x_Enc, y_Enc = Enclosure coodinates
 % theta_o = Initial beast orientation
 
@@ -45,17 +45,19 @@ for i = 1:Steps
     %%%Rotation
     theta = theta_o + W*dt;
     
-    %Prescribe wave again to account for slight rotation.
+    %quickly wave again to account for slight rotation.
     [VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,theta);
  
-    %First Shift to Beast Frame
+    %Begin Shift to Beast Frame
+    
+    %First translate cm to origin
     xcoord = xcoord - x_cm_history(i);
     ycoord = ycoord - y_cm_history(i);
     
     Angles = zeros([1, length(xcoord)]);
     Angles(1) = 0;
     %Get Angles for each blob from arctan. [-pi/2,pi/2]
-    %These are the blob angles off the beast's x axis
+    %These are the blob angles off the enclosure's x axis
     for j=2:length(xcoord)
         if xcoord(j)>=0 && ycoord(j)>=0
             Angles(j) = atan(abs(ycoord(j)/xcoord(j)));
@@ -72,7 +74,6 @@ for i = 1:Steps
     NewAngles = Angles + W*dt;
 
     %Find new beast blob coordinates after rotation
-    %Right now this is putting all blobs of one shell at the same coords.
     r_shell = sqrt(xcoord.^2 + ycoord.^2);
     xcoord = r_shell.*cos(NewAngles); %x(i+1) = r_shell*cos(theta(i+1))
     ycoord = r_shell.*sin(NewAngles);
@@ -95,8 +96,8 @@ for i = 1:Steps
     Ux_history(i+1) = Ux;
     Uy_history(i+1) = Uy;
 
-    W_history(1+1) = W;
-    theta_history(1+1) = theta;
+    W_history(i+1) = W;
+    theta_history(i+1) = theta;
 end
 
 end
