@@ -10,11 +10,11 @@ VxRim     = zeros([NRim, 1]);     %%% x-component of tangential velocity at the 
 VyRim     = zeros([NRim, 1]);     %%% y-component of tangential velocity at the rim
 Angles    = zeros([NRim,1]);      %%% Angles corresponding to rim blobs.
 
-%First angle corresponds to the head blob.
+%First entry corresponds to the head blob.
 
 for i=1:NRim
     
-    angle = ((i-1) * 2 * pi/NRim) + theta_o;
+    angle = (i-1) * 2 * pi/NRim;
     VRimTheta(i) = B1*sin(angle) + B2*sin(2 * angle);
     
     VxRim(i)  = -VRimTheta(i) * sin(angle); 
@@ -22,6 +22,15 @@ for i=1:NRim
     
     Angles(i) = angle;
 end
+
+%Now Rotate velocities according to theta_o into lab frame.
+VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
+VyRimNew = VxRim*sin(theta_o) + VyRim*cos(theta_o);
+
+VxRim = VxRimNew;
+VyRim = VyRimNew;
+
+
 
 end
 

@@ -1,27 +1,33 @@
 tic
 
 %Simulation
-T = 20;
-dt = 1;
+T = 100;
+dt = .5;
 
 
 %Discretization
-a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;       %%% radius of blobs
 
 %Enclosure
-R = 5*a;   %%%Radius of enclosure
+R = 100*a;   %%%Radius of enclosure
 d = 2*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 4*a;          %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi/2;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = 2*pi/4;   %%% Beast intial orientation (head direction)
+r_o = 70*a;          %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
+theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
-%Beast frame has its head on the x axis at y = 0.
+%Beast frame has its head on its x axis at y = 0.
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+
+%Rotate coordinates according to theta_o
+xcoordNew = xcoord*cos(theta_o) - ycoord*sin(theta_o);
+ycoordNew = xcoord*sin(theta_o) + ycoord*cos(theta_o);
+xcoord = xcoordNew;
+ycoord = ycoordNew;
 
 Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
@@ -30,13 +36,26 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d); 
 
 
-%Prescribe wave in the enclosure frame, taking into account theta_o rotation of the head.
-[VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,theta_o);
+%Prescribe wave in the beast frame.
+[VxRim, VyRim, B1] = PrescribeWave(NRim);
 
-%Translate beast coordinates with (r_o, phi_o) and head facing direction (theta_o)
-%Into the enclosure frame
-[xcoord, ycoord, x_head, y_head] = Orient_disk(xcoord, ycoord, r_o, phi_o, theta_o, BlobsPerLayer);
-%xcoord and ycoord now label beast blob coordinates in the enclosure frame.
+%Now Rotate velocities according to theta_o into lab frame.
+VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
+VyRimNew = VxRim*sin(theta_o) + VyRim*cos(theta_o);
+VxRim = VxRimNew;
+VyRim = VyRimNew;
+
+%Translate beast CM to (r_o, phi_o) in enclosure frame
+x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.
+y_o = r_o*sin(phi_o); %%%Beast CM Initial y position
+
+xcoord = xcoord + x_o;
+ycoord = ycoord + y_o;
+
+%Grab the head coordinate for plotting purposes
+x_head = xcoord(end - NRim + 1);
+y_head = ycoord(end - NRim + 1);
+
 
 
 [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, Angles, x_cm_history, y_cm_history] = ...
@@ -47,13 +66,13 @@ toc
 
 %%Plotting
 figure(1)
-plot(x_cm_history(1), y_cm_history(1), 'ko','LineWidth', 1) %Begin at black
+plot(x_cm_history(1), y_cm_history(1), 'go','LineWidth', 1) %Begin at green
 hold on
 plot(x_cm_history(end), y_cm_history(end), 'ro','LineWidth', 1) %End at red
 plot(x_cm_history(2:end-1), y_cm_history(2:end-1), '.')
 daspect([1,1,1])
 %plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
-plot(x_Enc, y_Enc, 'go', 'LineWidth', 1)
+plot(x_Enc, y_Enc, 'ko', 'LineWidth', 1)
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
 hold off

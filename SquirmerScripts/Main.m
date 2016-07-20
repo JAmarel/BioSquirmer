@@ -1,10 +1,14 @@
 %% Single Squirmer. No Rotation.
 tic
-a = 10^7;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+xcoordnew = -ycoord;
+ycoordnew = xcoord;
+xcoord = xcoordnew;
+ycoord = ycoordnew;
 
 Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
 
@@ -12,6 +16,10 @@ NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
+VxRimnew = -VyRim;
+VyRimnew = VxRim;
+VxRim = VxRimnew;
+VyRim = VyRimnew;
 
 [fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 

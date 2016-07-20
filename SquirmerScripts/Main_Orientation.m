@@ -1,18 +1,32 @@
-%% Single Squirmer. No Rotation.
+%% Investigate Orientation effects on velocity
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
+theta_o = 3*pi/2; %%%Initial blob orientation.
+
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
-Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
+%Rotate coordinates according to theta_o
+xcoordNew = xcoord*cos(theta_o) - ycoord*sin(theta_o);
+ycoordNew = xcoord*sin(theta_o) + ycoord*cos(theta_o);
+xcoord = xcoordNew;
+ycoord = ycoordNew;
 
+Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
 NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
-[VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,pi);
+[VxRim, VyRim, B1] = PrescribeWave(NRim);
 
+%Now Rotate velocities according to theta_o into lab frame.
+VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
+VyRimNew = VxRim*sin(theta_o) + VyRim*cos(theta_o);
+VxRim = VxRimNew;
+VyRim = VyRimNew;
+
+%%
 [fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
 fx = fx/(B1/2); %Nondimensionalizing.
@@ -31,8 +45,8 @@ FyNet = sum(fy); %%% y-component of net force on squirmer
      
 speed = sqrt(Ux^2 + Uy^2);
 
-efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed);
-eigenvalues = eig(Matrix);
+% efficiency = CalcEfficiency(FxRim, FyRim, VxRim, VyRim, a, speed);
+% eigenvalues = eig(Matrix);
 
 
 %Plot the position blobs by xcoord and ycoord
