@@ -1,21 +1,21 @@
 tic
 
 %Simulation
-T = 100;
+T = 400;
 dt = .5;
 
 
 %Discretization
-a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;       %%% radius of blobs
 
 %Enclosure
-R = 100*a;   %%%Radius of enclosure
+R = 10*a;   %%%Radius of enclosure
 d = 2*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 70*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = -8*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
@@ -63,16 +63,19 @@ y_head = ycoord(end - NRim + 1);
 
 
 toc
-
 %%Plotting
 figure(1)
-plot(x_cm_history(1), y_cm_history(1), 'go','LineWidth', 1) %Begin at green
+plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
+     'MarkerFaceColor', 'green'); %Begin at green
 hold on
-plot(x_cm_history(end), y_cm_history(end), 'ro','LineWidth', 1) %End at red
-plot(x_cm_history(2:end-1), y_cm_history(2:end-1), '.')
+plot(x_cm_history(end), y_cm_history(end), 'Marker', 'o', 'MarkerSize', 2, ...
+     'MarkerFaceColor', 'red'); %End at red
+plot(x_cm_history(2:end-1), y_cm_history(2:end-1),'Marker', '.', 'MarkerSize', 2, ...
+     'MarkerFaceColor', 'black');
 daspect([1,1,1])
 %plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
-plot(x_Enc, y_Enc, 'ko', 'LineWidth', 1)
+plot(x_Enc, y_Enc, 'Marker', '.', 'MarkerSize', 1, ...
+     'MarkerFaceColor', 'black');
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
 hold off
