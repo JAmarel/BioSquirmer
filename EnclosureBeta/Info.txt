@@ -24,7 +24,9 @@ theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 2. Same as (1.) except now B2 = 0.
 3. Same as above, except now B2 = -1.
-4. 
+
+
+4. Possible Collision
 B1 = 0.1;            %%% tangential velocity strength (streaming)
 B2 = 1; 
 
@@ -46,7 +48,7 @@ r_o = -7.5*a;          %%% Radial coordinate of beast cm from center of enclosur
 phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = -pi;   %%% Beast intial orientation (head direction)
 
-5. Flow Field at the last time step in:
+5. FlowField (at the last time step) with:
 
 %Simulation
 T = 10;
