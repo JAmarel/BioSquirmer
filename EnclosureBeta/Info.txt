@@ -45,3 +45,30 @@ d = 1*s;    %%%Circumferential Enclosure Blob Spacing
 r_o = -7.5*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = -pi;   %%% Beast intial orientation (head direction)
+
+5. Flow Field at the last time step in:
+
+%Simulation
+T = 10;
+dt = 1;
+
+
+%Discretization
+a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+s= 0.1 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/8;       %%% radius of blobs
+
+%Enclosure
+R = 10*a;   %%%Radius of enclosure
+d = 1*s;    %%%Circumferential Enclosure Blob Spacing
+
+%Initial Conditions
+r_o = -8.5*a;          %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
+theta_o = pi/2;   %%% Beast intial orientation (head direction)
+
+B1 = 0.1;            %%% tangential velocity strength (streaming)
+B2 = 0; 
+
+6. Same as above, now B2 = 1.
+7. Same as above, now B2 = -1.

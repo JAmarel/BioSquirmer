@@ -1,8 +1,8 @@
 tic
 
 %Simulation
-T = 200;
-dt = .25;
+T = 10;
+dt = 1;
 
 
 %Discretization
@@ -15,9 +15,9 @@ R = 10*a;   %%%Radius of enclosure
 d = 1*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -7.5*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = -8.5*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = -pi;   %%% Beast intial orientation (head direction)
+theta_o = pi/2;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
 %Beast frame has its head on its x axis at y = 0.
@@ -58,12 +58,13 @@ y_head = ycoord(end - NRim + 1);
 
 
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, Angles, x_cm_history, y_cm_history] = ...
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = ...
     TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o);
 
 
 toc
-%%Plotting
+
+%% Plot the cm trajectory
 figure(1)
 plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'green'); %Begin at green
@@ -78,4 +79,33 @@ plot(x_Enc, y_Enc, 'Marker', '.', 'MarkerSize', 1, ...
      'MarkerFaceColor', 'black');
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
+hold off
+
+%% Plot vector field at the last time step   %Dimensions may be wrong in here. 
+figure(2)
+rectangle('Position',[-R, -R, 2*R, 2*R],...
+           'Curvature',[1,1],...
+           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'k') %This outlines the enclosure
+       
+rectangle('Position',[x_cm_history(end) - a, y_cm_history(end) - a, 2*a, 2*a],...
+           'Curvature',[1,1],...
+           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r') %This outlines the beast
+daspect([1,1,1])
+hold on
+
+x = [x_cm_history(end) - 3*a :  0.15 * a : x_cm_history(end) + 3*a]';  %%% make a column
+y =  y_cm_history(end) - 3*a :  0.15 * a : y_cm_history(end) + 3*a;    %%% make a row
+
+X = repmat(x, [1,length(y)]);   %%% form a matrix 
+Y = repmat(y, [length(x), 1]);  %%% form a matrix
+
+VX = VX_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
+VY = VY_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
+
+figure(2)
+quiver(X, Y, VX, VY, 'b')
+
+xlim([x_cm_history(end) - 4*a x_cm_history(end) + 4*a]);
+ylim([y_cm_history(end) - 4*a y_cm_history(end) + 4*a]);
+
 hold off

@@ -5,10 +5,10 @@ s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
-xcoordnew = -ycoord;
-ycoordnew = xcoord;
-xcoord = xcoordnew;
-ycoord = ycoordnew;
+% xcoordnew = -ycoord;
+% ycoordnew = xcoord;
+% xcoord = xcoordnew;
+% ycoord = ycoordnew;
 
 Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
 
@@ -16,10 +16,10 @@ NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
-VxRimnew = -VyRim;
-VyRimnew = VxRim;
-VxRim = VxRimnew;
-VyRim = VyRimnew;
+% VxRimnew = -VyRim;
+% VyRimnew = VxRim;
+% VxRim = VxRimnew;
+% VyRim = VyRimnew;
 
 [fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
@@ -65,27 +65,27 @@ eigenvalues = eig(Matrix);
 % hold off
 
 %% Plot vector field   %Dimensions may be wrong in here. 
-%  figure(3)
-%  rectangle('Position',[-a, -a, 2*a, 2*a],...
-%            'Curvature',[1,1],...
-%            'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r')
-%  daspect([1,1,1])
-%  hold on
-% 
-% x = [-2 * a :  0.15 * a : 2 * a]';  %%% make a column
-% y =  -2 * a :  0.15 * a : 2 * a;    %%% make a row
-% 
-% X = repmat(x, [1,length(y)]);   %%% form a matrix 
-% Y = repmat(y, [length(x), 1]);  %%% form a matrix
-% 
-% VX = VX_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
-% VY = VY_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
-% 
-% figure(3)
-% quiver(X, Y, VX, VY, 'b')
-% hold off
-% 
-% %%% Plot fluid velocity along phi=0 direction
+ figure(3)
+ rectangle('Position',[-a, -a, 2*a, 2*a],...
+           'Curvature',[1,1],...
+           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r')
+ daspect([1,1,1])
+ hold on
+
+x = [-2 * a :  0.15 * a : 2 * a]';  %%% make a column
+y =  -2 * a :  0.15 * a : 2 * a;    %%% make a row
+
+X = repmat(x, [1,length(y)]);   %%% form a matrix 
+Y = repmat(y, [length(x), 1]);  %%% form a matrix
+
+VX = VX_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
+VY = VY_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
+
+figure(3)
+quiver(X, Y, VX, VY, 'b')
+hold off
+
+%%% Plot fluid velocity along phi=0 direction
 % span_r = linspace(0, 3*a, 30);
 %   
 %  vx = zeros([1,length(span_r)]);

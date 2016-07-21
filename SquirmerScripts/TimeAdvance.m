@@ -1,4 +1,4 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, Angles, x_cm_history, y_cm_history] = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o)
+function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -12,6 +12,9 @@ Steps = floor(T/dt); %Total number of increments
 %Initialize the empty arrays
 x_history = zeros([Steps+1,length(xcoord)]);
 y_history = zeros([Steps+1,length(xcoord)]);
+
+fx_history = zeros([Steps+1,length([xcoord x_Enc])]);
+fy_history = zeros([Steps+1,length([xcoord x_Enc])]);
 
 x_cm_history = zeros([Steps+1,1]);
 y_cm_history = zeros([Steps+1,1]);
@@ -36,6 +39,8 @@ theta_history(1) = theta_o;
 Ux_history(1,:) = 0;
 Uy_history(1,:) = 0;
 W_history(1,:) = 0;
+fx_history(1,:) = 0;
+fy_history(1,:) = 0;
 
 
 for i = 1:Steps
@@ -45,8 +50,11 @@ for i = 1:Steps
     %%%Rotation
     theta = theta_o + W*dt;
     
-    %quickly wave again to account for slight rotation.
-    [VxRim, VyRim, B1] = PrescribeWave_Orient(NRim,theta);
+    %rotate prescribed wave again account for W*dt.
+    VxRimNew = VxRim*cos(W*dt) - VyRim*sin(W*dt);
+    VyRimNew = VxRim*sin(W*dt) + VyRim*cos(W*dt);
+    VxRim = VxRimNew;
+    VyRim = VyRimNew;
  
     %Begin Shift to Beast Frame
     
@@ -54,29 +62,11 @@ for i = 1:Steps
     xcoord = xcoord - x_cm_history(i);
     ycoord = ycoord - y_cm_history(i);
     
-    Angles = zeros([1, length(xcoord)]);
-    Angles(1) = 0;
-    %Get Angles for each blob from arctan. [-pi/2,pi/2]
-    %These are the blob angles off the enclosure's x axis
-    for j=2:length(xcoord)
-        if xcoord(j)>=0 && ycoord(j)>=0
-            Angles(j) = atan(abs(ycoord(j)/xcoord(j)));
-        elseif xcoord(j)<0 && ycoord(j)>=0
-            Angles(j) = pi - atan(abs(ycoord(j)/xcoord(j)));
-        elseif xcoord(j)<0 && ycoord(j)<0
-            Angles(j) = pi + atan(abs(ycoord(j)/xcoord(j)));
-        elseif xcoord(j)>=0 && ycoord(j)<0
-            Angles(j) = 2*pi - atan(abs(ycoord(j)/xcoord(j)));
-        end
-    end
-    
-    %New angles after W*dt
-    NewAngles = Angles + W*dt;
-
-    %Find new beast blob coordinates after rotation
-    r_shell = sqrt(xcoord.^2 + ycoord.^2);
-    xcoord = r_shell.*cos(NewAngles); %x(i+1) = r_shell*cos(theta(i+1))
-    ycoord = r_shell.*sin(NewAngles);
+    %rotate coordinates to account for slight rotation.
+    xcoordNew = xcoord*cos(W*dt) - ycoord*sin(W*dt);
+    ycoordNew = xcoord*sin(W*dt) + ycoord*cos(W*dt);
+    xcoord = xcoordNew;
+    ycoord = ycoordNew;
     
     %Back to Lab Frame centered at the enclosure.
     xcoord = xcoord + x_cm_history(i);
@@ -89,6 +79,9 @@ for i = 1:Steps
     %Fill in history
     x_history(i+1,:) = xcoord;
     y_history(i+1,:) = ycoord;
+    
+    fx_history(i+1,:) = fx;
+    fy_history(i+1,:) = fy;
     
     x_cm_history(i+1) = xcoord(1);
     y_cm_history(i+1) = ycoord(1);
