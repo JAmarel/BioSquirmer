@@ -1,7 +1,7 @@
 tic
 
 %Simulation
-T = 10;
+T = 5;
 dt = 1;
 
 
@@ -37,7 +37,7 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 
 
 %Prescribe wave in the beast frame.
-[VxRim, VyRim, B1] = PrescribeWave(NRim);
+[VxRim, VyRim, B1, B2] = PrescribeWave(NRim);
 
 %Now Rotate velocities according to theta_o into lab frame.
 VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
@@ -64,8 +64,40 @@ y_head = ycoord(end - NRim + 1);
 
 toc
 
+%Create some strings for plot detail
+str_T = ['T = ',num2str(T)];
+str_dt = ['dt = ',num2str(dt)];
+str_a = ['a = ',num2str(a)];
+str_s = ['s = ',num2str(s)];
+str_eps = ['epsilon = ',num2str(s)];
+str_R = ['R = ',num2str(R)];
+str_d = ['d = ',num2str(d)];
+str_r_o = ['r_o = ',num2str(r_o)];
+str_phi_o = ['phi_o = ',num2str(phi_o)];
+str_theta_o = ['theta_o = ',num2str(theta_o)];
+str_B1 = ['B1 = ',num2str(B1)];
+str_B2 = ['B2 = ',num2str(B2)];
+
 %% Plot the cm trajectory
-figure(1)
+fig = figure(1);
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[.3 .1 .6 .8]);
+axes(ax1);
+descr = {'Parameters:';
+    str_T;
+    str_dt;
+    str_a;
+    str_s;
+    str_eps;
+    str_R;
+    str_d;
+    str_r_o;
+    str_phi_o;
+    str_theta_o;
+    str_B1;
+    str_B2};
+text(.025,0.6,descr)
+axes(ax2);
 plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'green'); %Begin at green
 hold on
@@ -82,7 +114,25 @@ axis off
 hold off
 
 %% Plot vector field at the last time step   %Dimensions may be wrong in here. 
-figure(2)
+fig = figure(2);
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[.3 .1 .6 .8]);
+axes(ax1);
+descr = {'Parameters:';
+    str_T;
+    str_dt;
+    str_a;
+    str_s;
+    str_eps;
+    str_R;
+    str_d;
+    str_r_o;
+    str_phi_o;
+    str_theta_o;
+    str_B1;
+    str_B2};
+text(.025,0.6,descr)
+axes(ax2);
 rectangle('Position',[-R, -R, 2*R, 2*R],...
            'Curvature',[1,1],...
            'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'k') %This outlines the enclosure

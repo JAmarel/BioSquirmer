@@ -1,4 +1,4 @@
-function [VxRim, VyRim, B1] = PrescribeWave(NRim)
+function [VxRim, VyRim, B1, B2] = PrescribeWave(NRim)
 %Prescribes single squirmer wave
 %   Detailed explanation goes here
 
