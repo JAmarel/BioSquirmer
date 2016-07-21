@@ -1,7 +1,7 @@
 %% Single squirmer with rotation
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
-s= 0.1 * a;          %%% spacing between neighboring blobs
+s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
