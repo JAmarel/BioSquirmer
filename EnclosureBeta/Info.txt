@@ -24,3 +24,24 @@ theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 2. Same as (1.) except now B2 = 0.
 3. Same as above, except now B2 = -1.
+4. 
+B1 = 0.1;            %%% tangential velocity strength (streaming)
+B2 = 1; 
+
+T = 200;
+dt = .25;
+
+
+%Discretization
+a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+s= 0.1 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/8;       %%% radius of blobs
+
+%Enclosure
+R = 10*a;   %%%Radius of enclosure
+d = 1*s;    %%%Circumferential Enclosure Blob Spacing
+
+%Initial Conditions
+r_o = -7.5*a;          %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
+theta_o = -pi;   %%% Beast intial orientation (head direction)

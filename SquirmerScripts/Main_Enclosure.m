@@ -1,8 +1,8 @@
 tic
 
 %Simulation
-T = 400;
-dt = .5;
+T = 200;
+dt = .25;
 
 
 %Discretization
@@ -12,12 +12,12 @@ epsilon = s/8;       %%% radius of blobs
 
 %Enclosure
 R = 10*a;   %%%Radius of enclosure
-d = 2*s;    %%%Circumferential Enclosure Blob Spacing
+d = 1*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -8*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = -7.5*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = pi/4;   %%% Beast intial orientation (head direction)
+theta_o = -pi;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
 %Beast frame has its head on its x axis at y = 0.
