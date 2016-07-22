@@ -2,7 +2,7 @@ tic
 
 %Simulation
 T = 1;
-dt = .025;
+dt = .005;
 
 %Discretization
 a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -14,9 +14,9 @@ R = 10*a;   %%%Radius of enclosure
 d = 1*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -8*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = -6*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = pi/2;   %%% Beast intial orientation (head direction)
+theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
 %Beast frame has its head on its x axis at y = 0.
@@ -57,6 +57,7 @@ toc
 %Create some strings for plot detail
 str_T = ['T = ',num2str(T)];
 str_dt = ['dt = ',num2str(dt)];
+str_Time = ['Nondimensionalized by B_1/(2*l_s)'];
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
 str_eps = ['epsilon = ',num2str(s)];
@@ -78,6 +79,7 @@ axes(ax1);
 descr = {'Parameters:';
     str_T;
     str_dt;
+    str_Time;
     str_a;
     str_s;
     str_eps;
