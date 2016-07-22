@@ -1,8 +1,8 @@
 tic
 
 %Simulation
-T = 1;
-dt = .005;
+T = .5;
+dt = .001;
 
 %Discretization
 a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -10,13 +10,13 @@ s= 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;       %%% radius of blobs
 
 %Enclosure
-R = 10*a;   %%%Radius of enclosure
-d = 1*s;    %%%Circumferential Enclosure Blob Spacing
+R = 5*a;   %%%Radius of enclosure
+d = 2*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -6*a;          %%% Radial coordinate of beast cm from center of enclosure
+r_o = 0*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
+theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
 %Beast frame has its head on its x axis at y = 0.
@@ -38,6 +38,10 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 %Now Rotate velocities according to theta_o into lab frame.
 [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
 
+%Nondimensionalize from the start?
+VxRim = VxRim/(B1/2);
+VyRim = VyRim/(B1/2);
+
 %Translate beast CM to (r_o, phi_o) in enclosure frame
 x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%%Beast CM Initial y position
@@ -49,15 +53,15 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = ...
-    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o, B1);
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = ...
+    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1);
 
 toc
 
-%Create some strings for plot detail
+%% Create some strings for plot detail
 str_T = ['T = ',num2str(T)];
 str_dt = ['dt = ',num2str(dt)];
-str_Time = ['Nondimensionalized by B_1/(2*l_s)'];
+str_Time = 'Nondimensionalized by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
 str_eps = ['epsilon = ',num2str(s)];
@@ -68,8 +72,8 @@ str_phi_o = ['phi_o = ',num2str(phi_o)];
 str_theta_o = ['theta_o = ',num2str(theta_o)];
 str_B1 = ['B1 = ',num2str(B1)];
 str_B2 = ['B2 = ',num2str(B2)];
-%str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
-%str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
+str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
+str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
 %% Plot the cm trajectory
 fig = figure(1);
@@ -89,7 +93,9 @@ descr = {'Parameters:';
     str_phi_o;
     str_theta_o;
     str_B1;
-    str_B2};
+    str_B2;
+    str_COND_max;
+    str_COND_min};
 text(.025,0.6,descr);
 %back to plotting data
 axes(ax2);
