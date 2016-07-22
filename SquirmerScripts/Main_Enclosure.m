@@ -1,12 +1,12 @@
 tic
 
 %Simulation
-T = 5;
+T = 10;
 dt = 1;
 
 
 %Discretization
-a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;       %%% radius of blobs
 
@@ -55,8 +55,6 @@ ycoord = ycoord + y_o;
 %Grab the head coordinate for plotting purposes
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
-
-
 
 [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = ...
     TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o);
@@ -114,48 +112,48 @@ axis off
 hold off
 
 %% Plot vector field at the last time step   %Dimensions may be wrong in here. 
-fig = figure(2);
-ax1 = axes('Position',[0 0 1 1],'Visible','off');
-ax2 = axes('Position',[.3 .1 .6 .8]);
-axes(ax1);
-descr = {'Parameters:';
-    str_T;
-    str_dt;
-    str_a;
-    str_s;
-    str_eps;
-    str_R;
-    str_d;
-    str_r_o;
-    str_phi_o;
-    str_theta_o;
-    str_B1;
-    str_B2};
-text(.025,0.6,descr)
-axes(ax2);
-rectangle('Position',[-R, -R, 2*R, 2*R],...
-           'Curvature',[1,1],...
-           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'k') %This outlines the enclosure
-       
-rectangle('Position',[x_cm_history(end) - a, y_cm_history(end) - a, 2*a, 2*a],...
-           'Curvature',[1,1],...
-           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r') %This outlines the beast
-daspect([1,1,1])
-hold on
-
-x = [x_cm_history(end) - 3*a :  0.15 * a : x_cm_history(end) + 3*a]';  %%% make a column
-y =  y_cm_history(end) - 3*a :  0.15 * a : y_cm_history(end) + 3*a;    %%% make a row
-
-X = repmat(x, [1,length(y)]);   %%% form a matrix 
-Y = repmat(y, [length(x), 1]);  %%% form a matrix
-
-VX = VX_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
-VY = VY_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
-
-figure(2)
-quiver(X, Y, VX, VY, 'b')
-
-xlim([x_cm_history(end) - 4*a x_cm_history(end) + 4*a]);
-ylim([y_cm_history(end) - 4*a y_cm_history(end) + 4*a]);
-
-hold off
+% fig = figure(2);
+% ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% ax2 = axes('Position',[.3 .1 .6 .8]);
+% axes(ax1);
+% descr = {'Parameters:';
+%     str_T;
+%     str_dt;
+%     str_a;
+%     str_s;
+%     str_eps;
+%     str_R;
+%     str_d;
+%     str_r_o;
+%     str_phi_o;
+%     str_theta_o;
+%     str_B1;
+%     str_B2};
+% text(.025,0.6,descr)
+% axes(ax2);
+% rectangle('Position',[-R, -R, 2*R, 2*R],...
+%            'Curvature',[1,1],...
+%            'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'k') %This outlines the enclosure
+%        
+% rectangle('Position',[x_cm_history(end) - a, y_cm_history(end) - a, 2*a, 2*a],...
+%            'Curvature',[1,1],...
+%            'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r') %This outlines the beast
+% daspect([1,1,1])
+% hold on
+% 
+% x = [x_cm_history(end) - 3*a :  0.15 * a : x_cm_history(end) + 3*a]';  %%% make a column
+% y =  y_cm_history(end) - 3*a :  0.15 * a : y_cm_history(end) + 3*a;    %%% make a row
+% 
+% X = repmat(x, [1,length(y)]);   %%% form a matrix 
+% Y = repmat(y, [length(x), 1]);  %%% form a matrix
+% 
+% VX = VX_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
+% VY = VY_FIELD_DISK(fx_history(end,:), fy_history(end,:), [x_Enc x_history(end,:)], [y_Enc y_history(end,:)], epsilon,  x, y);
+% 
+% figure(2)
+% quiver(X, Y, VX, VY, 'b')
+% 
+% xlim([x_cm_history(end) - 4*a x_cm_history(end) + 4*a]);
+% ylim([y_cm_history(end) - 4*a y_cm_history(end) + 4*a]);
+% 
+% hold off

@@ -47,6 +47,15 @@ for i = 1:Steps
     [fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
+%     fx = fx/(B1/2); %Nondimensionalizing.
+%     fy = fy/(B1/2);
+%     Ux = Ux/(B1/2); %Now U and V have no dimensions.
+%     Uy = Uy/(B1/2); %f carries dimensions [1/4pieta*h]
+%     VxRim = VxRim/(B1/2);
+%     VyRim = VyRim/(B1/2);
+    
+%     W = W/(B1/2);
+
     %%%Rotation
     theta = theta_o + W*dt;
     
