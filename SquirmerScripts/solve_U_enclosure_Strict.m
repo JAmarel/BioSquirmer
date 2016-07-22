@@ -1,10 +1,8 @@
-function [fx, fy, Ux, Uy, W, Matrix, N] = ...
-    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
+function [fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix, N] = ...
+    solve_U_enclosure_Strict(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
 
-%%% Now including rotation and enclosure. M = 7x7
-%%% Relaxing the force constraint on the enclosure and remove 
-%%%the ability for the enclosure
-%%% to gain nonzero velocity
+%%% Strict version requires the sum of forces on the enclosure to be zero
+
 
 %%% angle = an array that contains instantenous angular position of
 %%% point-like forces on the circumference
@@ -112,11 +110,13 @@ Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc
           M21 M22 zeros([N,1]) [zeros([NEnc,1]); -ones([NBlobs,1])] [zeros([NEnc,1]); -xcoord.'] zeros([N,1]) [-ones([NEnc,1]); zeros([NBlobs,1])]; ...
           -[zeros([1,NEnc]) ones([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
           zeros([1, N]) -[zeros([1,NEnc]) ones([1, NBlobs])] 0 0 0 0 0; ...
-          [zeros([1,NEnc]) ycoord] [zeros([1,NEnc]) -xcoord] 0 0 0 0 0];
+          [zeros([1,NEnc]) ycoord] [zeros([1,NEnc]) -xcoord] 0 0 0 0 0; ...
+          -[ones([1,NEnc]) zeros([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
+          zeros([1, N]) -[ones([1,NEnc]) zeros([1, NBlobs])] 0 0 0 0 0];
        
  %scondition = cond(Matrix);
  
- c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0];
+ c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0; 0 ; 0];
  % [VxEnclosure; VxInner; VxRim; VyEnclosure; VyInner; VyRim; FxBeast; FyBeast; TorqueBeast; Fx_Enc, Fy_Enc]
 
  
@@ -129,5 +129,7 @@ Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc
  Ux = variables(2*N + 1);
  Uy = variables(2*N + 2);
  W  = variables(2*N + 3);
+ Ux_Enc = variables(2*N + 4);
+ Uy_Enc = variables(2*N + 5);
 
 end

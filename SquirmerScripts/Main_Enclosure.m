@@ -92,7 +92,7 @@ descr = {'Parameters:';
     str_B2;
     str_COND_max;
     str_COND_min};
-text(.025,0.6,descr)
+text(.025,0.6,descr);
 %back to plotting data
 axes(ax2);
 plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
@@ -127,8 +127,11 @@ hold off
 %     str_phi_o;
 %     str_theta_o;
 %     str_B1;
-%     str_B2};
-% text(.025,0.6,descr)
+%     str_B2;
+%     str_COND_max;
+%     str_COND_min};
+% text(.025,0.6,descr);
+% %back to plotting data
 % axes(ax2);
 % rectangle('Position',[-R, -R, 2*R, 2*R],...
 %            'Curvature',[1,1],...

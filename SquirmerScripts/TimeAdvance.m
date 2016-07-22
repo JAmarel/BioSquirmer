@@ -46,7 +46,7 @@ fy_history(1,:) = 0;
 
 
 for i = 1:Steps
-    [fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix, N] = ...
+    [fx, fy, Ux, Uy, W, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
 %     fx = fx/(B1/2); %Nondimensionalizing.
