@@ -1,4 +1,5 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o)
+function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history]...
+    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o, B1)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -25,7 +26,7 @@ Uy_history = zeros([Steps+1,1]);
 W_history = zeros([Steps+1,1]);
 theta_history = zeros([Steps+1,1]);
 
-COND_history = zeros([Steps,1]);
+%COND_history = zeros([Steps,1]);
 
 %Initial Positions
 x_history(1,:) = xcoord;
@@ -49,14 +50,16 @@ for i = 1:Steps
     [fx, fy, Ux, Uy, W, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
-%     fx = fx/(B1/2); %Nondimensionalizing.
-%     fy = fy/(B1/2);
-%     Ux = Ux/(B1/2); %Now U and V have no dimensions.
-%     Uy = Uy/(B1/2); %f carries dimensions [1/4pieta*h]
-%     VxRim = VxRim/(B1/2);
-%     VyRim = VyRim/(B1/2);
-    
-%     W = W/(B1/2);
+
+    %Nondimensionalize first.
+    %Now U, V, and W have no dimensions.
+    %VxRim still carries m/s?
+    %f still carries dimensions [1/4pieta*h]?
+    fx = fx/(B1/2); 
+    fy = fy/(B1/2);
+    Ux = Ux/(B1/2); 
+    Uy = Uy/(B1/2); 
+    W = W/(B1/2);
 
     %%%Rotation
     theta = theta_o + W*dt;
@@ -82,6 +85,8 @@ for i = 1:Steps
     ycoord = ycoord + Uy*dt;
     
     %Fill in history
+    
+    
     x_history(i+1,:) = xcoord;
     y_history(i+1,:) = ycoord;
     
@@ -97,7 +102,7 @@ for i = 1:Steps
     W_history(i+1) = W;
     theta_history(i+1) = theta;
     
-    COND_history(i) = cond(Matrix);
+    %COND_history(i) = cond(Matrix);
 end
 
 end

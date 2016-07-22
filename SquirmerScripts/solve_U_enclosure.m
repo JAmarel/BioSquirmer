@@ -105,7 +105,7 @@ M21 = zeros([N, N]);  %%% y-component of the vector field at point i due to x-le
  %%% y-component of the velocity field at point i on the circumference due to a y-levinslet
  %%% in the center of the circle
  
- %%% Now we need to form one big matrix of the system of equations
+ %%% Now we need to form one big matrix for the system of equations
  
 %format short       
 Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc,1]); ycoord.'] [-ones([NEnc,1]); zeros([NBlobs,1])] zeros([N,1]); ...

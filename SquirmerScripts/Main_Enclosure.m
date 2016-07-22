@@ -1,9 +1,8 @@
 tic
 
 %Simulation
-T = 10;
-dt = 1;
-
+T = 1;
+dt = .025;
 
 %Discretization
 a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -15,8 +14,8 @@ R = 10*a;   %%%Radius of enclosure
 d = 1*s;    %%%Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -8.5*a;          %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi/4;     %%%Angle coordinate of beast cm from center of enclosure
+r_o = -8*a;          %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = pi/2;   %%% Beast intial orientation (head direction)
 
 %Coordinates of beast blobs in beast frame.
@@ -50,9 +49,8 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = ...
-    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o);
-
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = ...
+    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o, B1);
 
 toc
 
@@ -69,8 +67,8 @@ str_phi_o = ['phi_o = ',num2str(phi_o)];
 str_theta_o = ['theta_o = ',num2str(theta_o)];
 str_B1 = ['B1 = ',num2str(B1)];
 str_B2 = ['B2 = ',num2str(B2)];
-str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
-str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
+%str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
+%str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
 %% Plot the cm trajectory
 fig = figure(1);
@@ -89,9 +87,7 @@ descr = {'Parameters:';
     str_phi_o;
     str_theta_o;
     str_B1;
-    str_B2;
-    str_COND_max;
-    str_COND_min};
+    str_B2};
 text(.025,0.6,descr);
 %back to plotting data
 axes(ax2);
