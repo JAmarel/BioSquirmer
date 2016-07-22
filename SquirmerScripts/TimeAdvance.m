@@ -1,4 +1,4 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o)
+function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -24,6 +24,8 @@ Uy_history = zeros([Steps+1,1]);
 
 W_history = zeros([Steps+1,1]);
 theta_history = zeros([Steps+1,1]);
+
+COND_history = zeros([Steps,1]);
 
 %Initial Positions
 x_history(1,:) = xcoord;
@@ -94,6 +96,8 @@ for i = 1:Steps
 
     W_history(i+1) = W;
     theta_history(i+1) = theta;
+    
+    COND_history(i) = cond(Matrix);
 end
 
 end

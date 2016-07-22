@@ -50,7 +50,7 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history] = ...
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = ...
     TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, r_o, phi_o);
 
 
@@ -69,6 +69,8 @@ str_phi_o = ['phi_o = ',num2str(phi_o)];
 str_theta_o = ['theta_o = ',num2str(theta_o)];
 str_B1 = ['B1 = ',num2str(B1)];
 str_B2 = ['B2 = ',num2str(B2)];
+str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
+str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
 %% Plot the cm trajectory
 fig = figure(1);
@@ -87,8 +89,11 @@ descr = {'Parameters:';
     str_phi_o;
     str_theta_o;
     str_B1;
-    str_B2};
+    str_B2;
+    str_COND_max;
+    str_COND_min};
 text(.025,0.6,descr)
+%back to plotting data
 axes(ax2);
 plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'green'); %Begin at green
