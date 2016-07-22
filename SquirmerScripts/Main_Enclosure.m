@@ -24,10 +24,11 @@ theta_o = pi/2;   %%% Beast intial orientation (head direction)
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
 %Rotate coordinates according to theta_o
-xcoordNew = xcoord*cos(theta_o) - ycoord*sin(theta_o);
-ycoordNew = xcoord*sin(theta_o) + ycoord*cos(theta_o);
-xcoord = xcoordNew;
-ycoord = ycoordNew;
+[xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
+% xcoordNew = xcoord*cos(theta_o) - ycoord*sin(theta_o);
+% ycoordNew = xcoord*sin(theta_o) + ycoord*cos(theta_o);
+% xcoord = xcoordNew;
+% ycoord = ycoordNew;
 
 Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
@@ -40,10 +41,11 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 [VxRim, VyRim, B1, B2] = PrescribeWave(NRim);
 
 %Now Rotate velocities according to theta_o into lab frame.
-VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
-VyRimNew = VxRim*sin(theta_o) + VyRim*cos(theta_o);
-VxRim = VxRimNew;
-VyRim = VyRimNew;
+[VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
+% VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
+% VyRimNew = VxRim*sin(theta_o) + VyRim*cos(theta_o);
+% VxRim = VxRimNew;
+% VyRim = VyRimNew;
 
 %Translate beast CM to (r_o, phi_o) in enclosure frame
 x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.

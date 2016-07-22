@@ -60,10 +60,11 @@ for i = 1:Steps
     theta = theta_o + W*dt;
     
     %rotate prescribed wave again account for W*dt.
-    VxRimNew = VxRim*cos(W*dt) - VyRim*sin(W*dt);
-    VyRimNew = VxRim*sin(W*dt) + VyRim*cos(W*dt);
-    VxRim = VxRimNew;
-    VyRim = VyRimNew;
+    [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, W*dt);
+%     VxRimNew = VxRim*cos(W*dt) - VyRim*sin(W*dt);
+%     VyRimNew = VxRim*sin(W*dt) + VyRim*cos(W*dt);
+%     VxRim = VxRimNew;
+%     VyRim = VyRimNew;
  
     %Begin Shift to Beast Frame
     
@@ -72,11 +73,12 @@ for i = 1:Steps
     ycoord = ycoord - y_cm_history(i);
     
     %rotate coordinates to account for slight rotation.
-    xcoordNew = xcoord*cos(W*dt) - ycoord*sin(W*dt);
-    ycoordNew = xcoord*sin(W*dt) + ycoord*cos(W*dt);
-    xcoord = xcoordNew;
-    ycoord = ycoordNew;
-    
+    [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, W*dt);
+%     xcoordNew = xcoord*cos(W*dt) - ycoord*sin(W*dt);
+%     ycoordNew = xcoord*sin(W*dt) + ycoord*cos(W*dt);
+%     xcoord = xcoordNew;
+%     ycoord = ycoordNew;
+
     %Back to Lab Frame centered at the enclosure.
     xcoord = xcoord + x_cm_history(i);
     ycoord = ycoord + y_cm_history(i);
