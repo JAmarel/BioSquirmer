@@ -16,20 +16,12 @@ NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
 [VxRim, VyRim, B1] = PrescribeWave(NRim);
-% VxRimnew = -VyRim;
-% VyRimnew = VxRim;
-% VxRim = VxRimnew;
-% VyRim = VyRimnew;
 
-[fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
-
-fx = fx/(B1/2); %Nondimensionalizing.
-fy = fy/(B1/2);
-Ux = Ux/(B1/2); %Now U,W, and V have no dimensions.
-Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
-                %those units cancel in efficiency calculation.
+%Nondimensionalize
 VxRim = VxRim/(B1/2);
 VyRim = VyRim/(B1/2);
+
+[fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
 
 FxRim = fx(end-NRim+1:end);
 FyRim = fy(end-NRim+1:end);
