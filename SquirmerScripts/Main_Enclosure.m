@@ -2,7 +2,7 @@ tic
 
 %Simulation
 T = .5;
-dt = .001;
+dt = .1;
 
 %Discretization
 a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -18,19 +18,17 @@ r_o = 0*a;          %%% Radial coordinate of beast cm from center of enclosure
 phi_o = 0*pi;     %%%Angle coordinate of beast cm from center of enclosure
 theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
+x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.
+y_o = r_o*sin(phi_o); %%%Beast CM Initial y position
+
 %Coordinates of beast blobs in beast frame.
 %Beast frame has its head on its x axis at y = 0.
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
-
-%Rotate coordinates according to theta_o
-[xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
-
 Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 
-%Enclosure Blob Coordinates from the origin in the enclosure frame.
-[x_Enc, y_Enc] = DiscretizeEnclosure(R,d); 
-
+%Rotate coordinates according to theta_o
+[xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
 
 %Prescribe wave in the beast frame.
 [VxRim, VyRim, B1, B2] = PrescribeWave(NRim);
@@ -42,10 +40,11 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 VxRim = VxRim/(B1/2);
 VyRim = VyRim/(B1/2);
 
-%Translate beast CM to (r_o, phi_o) in enclosure frame
-x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.
-y_o = r_o*sin(phi_o); %%%Beast CM Initial y position
+%Enclosure Blob Coordinates.
+%Enclosure is a ring centered about the lab origin.
+[x_Enc, y_Enc] = DiscretizeEnclosure(R,d); 
 
+%Translate beast geometric center to the chosen initial position in enclosure frame.
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
 

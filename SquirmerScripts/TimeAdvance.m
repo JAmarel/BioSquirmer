@@ -3,9 +3,9 @@ function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
-% dt = Time steps
-% xcoord, ycoord = Initial beast (blob) coordinates in enclosure frame
-% x_Enc, y_Enc = Enclosure coodinates
+% dt = Time step increment
+% xcoord, ycoord = Initial beast (blob) coordinates in lab frame
+% x_Enc, y_Enc = Enclosure coodinates in lab frame
 % theta_o = Initial beast orientation
 
 Steps = floor(T/dt); %Total number of increments
@@ -32,7 +32,7 @@ COND_history = zeros([Steps,1]);
 x_history(1,:) = xcoord;
 y_history(1,:) = ycoord;
 
-%CM is always first entry
+%beast center is always first entry
 x_cm_history(1) = xcoord(1);
 y_cm_history(1) = ycoord(1);
 
@@ -48,30 +48,23 @@ fy_history(1,:) = 0;
 
 for i = 1:Steps
     [fx, fy, Ux, Uy, W, Matrix, N] = ...
-    solve_U_enclosure_Strict(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
-
-    %Nondimensionalize first.
-    %Now U, V, and W have no dimensions.
-    %VxRim still carries m/s?
-    %f still carries dimensions [1/4pieta*h]?
-
-    %%%Rotation
+    %%%Beast rotation
     theta = theta_o + W*dt;
     
-    %rotate prescribed wave again account for W*dt.
+    %Prescribe wave again account for W*dt.
     [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, W*dt);
  
-    %Begin Shift to Beast Frame
-    
-    %First translate cm to origin
+    %Shift to beast frame
+    %Translate origin at beast center
     xcoord = xcoord - x_cm_history(i);
     ycoord = ycoord - y_cm_history(i);
     
-    %rotate coordinates to account for slight rotation.
+    %Rotate beast coordinates to account for any rotation.
     [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, W*dt);
 
-    %Back to Lab Frame centered at the enclosure.
+    %Back to Lab Frame.
     xcoord = xcoord + x_cm_history(i);
     ycoord = ycoord + y_cm_history(i);
     
@@ -80,8 +73,6 @@ for i = 1:Steps
     ycoord = ycoord + Uy*dt;
     
     %Fill in history
-    
-    
     x_history(i+1,:) = xcoord;
     y_history(i+1,:) = ycoord;
     

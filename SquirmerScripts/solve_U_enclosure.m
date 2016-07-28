@@ -2,19 +2,11 @@ function [fx, fy, Ux, Uy, W, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
 
 %%% Now including rotation and enclosure. M = 7x7
-%%% Relaxing the force constraint on the enclosure and remove 
-%%%the ability for the enclosure
-%%% to gain nonzero velocity
-
-%%% angle = an array that contains instantenous angular position of
-%%% point-like forces on the circumference
-%%% radius = an array that contain instantenous radial position of
-%%% point-like forces
-
-%%% We assign the vector field distribution on the boundary of the circle
-
+%%% Relaxed the force constraint on the enclosure (this constrain remains in solve_u_strict)
+%%% Non longer calculates an enclosure velocity
 
 N = length([xcoord x_Enc]);   %%% number of blobs everywhere
+
 %%% make sure these are columns
 VxRim=VxRim(:);             %%% x-component of velocity at the rim of the disk                
 VyRim=VyRim(:);             %%% y-component of velocity at the rim of the disk
@@ -22,6 +14,10 @@ NRim;                       %%% number of blobs on the rim of the disk
 NBlobs = length(xcoord); %%% Number of beast blobs
 NEnc = length(x_Enc);    %%% Number of enclosure blobs
 
+
+% xvect plays the same role as xcoord did before the enclosure was added
+% This adds the enclosure blobs to the system of equations
+% Now M11 and others can be calculated the same as before
 xvect = [x_Enc xcoord]; %%% Vectors containing all blob coordinates
 yvect = [y_Enc ycoord];
 
@@ -107,7 +103,8 @@ M21 = zeros([N, N]);  %%% y-component of the vector field at point i due to x-le
  
  %%% Now we need to form one big matrix for the system of equations
  
-%format short       
+%format short
+% Explain how I changed the matrix here
 Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc,1]); ycoord.'] [-ones([NEnc,1]); zeros([NBlobs,1])] zeros([N,1]); ...
           M21 M22 zeros([N,1]) [zeros([NEnc,1]); -ones([NBlobs,1])] [zeros([NEnc,1]); -xcoord.'] zeros([N,1]) [-ones([NEnc,1]); zeros([NBlobs,1])]; ...
           -[zeros([1,NEnc]) ones([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
@@ -117,10 +114,8 @@ Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc
  %scondition = cond(Matrix);
  
  c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0];
- % [VxEnclosure; VxInner; VxRim; VyEnclosure; VyInner; VyRim; FxBeast; FyBeast; TorqueBeast; Fx_Enc, Fy_Enc]
+ % [[VxEnclosure; VxInner; VxRim]; [VyEnclosure; VyInner; VyRim]; FxBeast; FyBeast; TorqueBeast]
 
- 
- %[variables] = Gauss_method(2 * N + 2, Matrix, c_coefs);
  
  variables = Matrix\c_coefs;
  

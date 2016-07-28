@@ -2,12 +2,7 @@ function [fx, fy, Ux, Uy, W, Ux_Enc, Uy_Enc, Matrix, N] = ...
     solve_U_enclosure_Strict(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
 
 %%% Strict version requires the sum of forces on the enclosure to be zero
-
-
-%%% angle = an array that contains instantenous angular position of
-%%% point-like forces on the circumference
-%%% radius = an array that contain instantenous radial position of
-%%% point-like forces
+%%% For some reason calling this makes COND=1.
 
 %%% We assign the vector field distribution on the boundary of the circle
 

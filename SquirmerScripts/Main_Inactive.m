@@ -3,7 +3,7 @@ s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
 %Net body forces on beast
-FxBeast = 4; 
+FxBeast = 8; 
 FyBeast = 0;
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
