@@ -1,3 +1,7 @@
+% First inactive attempt. Zero prescribed wave velocity and nonzero
+% prescribed body force. Choose an F and solve for U. This approach
+% is dropped in favor of Pick a U and solve for F.
+
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
@@ -53,8 +57,8 @@ F_hat_y = Uy1/HPW_mobility(a);
 % F_hat_x = FxBeast;
 % F_hat_y = FyBeast;
 
-
+% These terms are from equation 12 in our notes
 LHS = F_hat_x*Ux2 + F_hat_y*Uy2
 RHS = -(sum(VxRim.*FxRim1) + sum(VyRim.*FyRim1))
 
-Ratio = LHS/RHS
+Ratio = LHS/RHS % This ratio is 1 if we are in perfect agreement.
