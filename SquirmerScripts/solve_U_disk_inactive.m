@@ -1,5 +1,5 @@
 function [fx, fy, Matrix] = ...
-    solve_U_disk_rot_inactive(xcoord, ycoord, epsilon, NRim, Ux, Uy)
+    solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux, Uy)
 %Inactive disk. Fnet !=0. Input Vrim = 0.
 %%% Now including rotation. M = 5x5
 

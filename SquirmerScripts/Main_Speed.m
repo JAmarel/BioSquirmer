@@ -1,5 +1,5 @@
 %%Calculates/plots the speed for various beast radii without rotation
-n = 2;
+n = 10;
 Radii = logspace(-1.5,3.5,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
 Speeds = zeros([1, n]);
