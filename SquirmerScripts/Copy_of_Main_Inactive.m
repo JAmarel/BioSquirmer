@@ -6,9 +6,9 @@ a = 10;              %%% radius of the disk nondimensionalized by the Saffman le
 s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
 
-%Net body forces on beast
-FxBeast = 8; 
-FyBeast = 0;
+%Velocity of inactive disk
+Ux1 = 4; 
+Uy1 = 0;
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
@@ -24,7 +24,7 @@ VxRim = VxRim/(B1/2);
 VyRim = VyRim/(B1/2);
 
 %% Inactive
-[fx1, fy1, Ux1, Uy1, W1, Matrix1] = solve_U_disk_rot_inactive(xcoord, ycoord, epsilon, NRim, FxBeast, FyBeast);
+[fx1, fy1, Matrix1] = solve_U_disk_rot_inactive(xcoord, ycoord, epsilon, NRim, Ux1, Uy1);
 
 FxRim1 = fx1(end-NRim+1:end);
 FyRim1 = fy1(end-NRim+1:end);
@@ -51,11 +51,10 @@ speed2 = sqrt(Ux2^2 + Uy2^2);
 % 
 %% Recip Thm
 
+% hat corresponds to the conjugate scenario
 F_hat_x = Ux1/HPW_mobility(a);
 F_hat_y = Uy1/HPW_mobility(a);
 
-% F_hat_x = FxBeast;
-% F_hat_y = FyBeast;
 
 % These terms are from equation 12 in our notes
 LHS = F_hat_x*Ux2 + F_hat_y*Uy2
