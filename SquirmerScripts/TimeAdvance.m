@@ -1,5 +1,5 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history]...
-    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1)
+function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history]...
+    = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -8,9 +8,11 @@ function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history
 % x_Enc, y_Enc = Enclosure coodinates in lab frame
 % theta_o = Initial beast orientation
 
-Steps = floor(T/dt); %Total number of increments
+Steps = floor(T/dt_o); %Total number of increments
 
 %Initialize the empty arrays
+dt_history = zeros([Steps+1,1]);
+
 x_history = zeros([Steps+1,length(xcoord)]);
 y_history = zeros([Steps+1,length(xcoord)]);
 
@@ -19,6 +21,9 @@ fy_history = zeros([Steps+1,length([xcoord x_Enc])]);
 
 x_cm_history = zeros([Steps+1,1]);
 y_cm_history = zeros([Steps+1,1]);
+
+r_cm_history = zeros([Steps+1,1]);
+separation_history = zeros([Steps+1,1]); %Distance between enclosure and the closest blob
 
 Ux_history = zeros([Steps+1,1]);
 Uy_history = zeros([Steps+1,1]);
@@ -36,6 +41,7 @@ y_history(1,:) = ycoord;
 x_cm_history(1) = xcoord(1);
 y_cm_history(1) = ycoord(1);
 
+
 theta_history(1) = theta_o;
 
 % No data for these first entries.
@@ -45,11 +51,26 @@ W_history(1,:) = 0;
 fx_history(1,:) = 0;
 fy_history(1,:) = 0;
 
+dt = dt_o;
 
 for i = 1:Steps
     [fx, fy, Ux, Uy, W, Matrix, N] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
+    % Scale timesteps based on how close the enclosure is
+    r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);
+    separation_history(i) = R - (r_cm_history(i) + a);
+    
+%%% Scaling timesteps based on distance from enclosure
+    if separation_history(i) < .15*a
+        dt = dt_o/50;
+    elseif separation_history(i) < .075*a
+        dt = dt_o/1000;
+    else
+        dt = dt_o;
+    end
+    dt_history(i) = dt;
+    
     %%%Beast rotation
     theta = theta_o + W*dt;
     
@@ -61,7 +82,7 @@ for i = 1:Steps
     xcoord = xcoord - x_cm_history(i);
     ycoord = ycoord - y_cm_history(i);
     
-    %Rotate beast coordinates to account for any rotation.
+    %Rotate beast coordinates due to W
     [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, W*dt);
 
     %Back to Lab Frame.
@@ -72,7 +93,7 @@ for i = 1:Steps
     xcoord = xcoord + Ux*dt;
     ycoord = ycoord + Uy*dt;
     
-    %Fill in history
+    %Fill in resulting (future) data
     x_history(i+1,:) = xcoord;
     y_history(i+1,:) = ycoord;
     

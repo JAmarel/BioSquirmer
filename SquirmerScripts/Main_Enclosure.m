@@ -1,29 +1,29 @@
 tic
 
 %Simulation
-T = .5;
-dt = .1;
+T = 2;
+dt = .01;
 
 %Discretization
 a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
-s= 0.1 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/8;       %%% radius of blobs
+s = 0.1 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/8;        %%% radius of blobs
 
 %Enclosure
-R = 5*a;   %%%Radius of enclosure
-d = 2*s;    %%%Circumferential Enclosure Blob Spacing
+R = 5*a;    %%% Radius of enclosure
+d = 2*s;    %%% Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 0*a;          %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi;     %%%Angle coordinate of beast cm from center of enclosure
-theta_o = pi/4;   %%% Beast intial orientation (head direction)
+r_o = -3*a;         %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi;       %%% Angle coordinate of beast cm from center of enclosure
+theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
 
-x_o = r_o*cos(phi_o); %%%Beast CM initial x position as seen in enclosure frame.
-y_o = r_o*sin(phi_o); %%%Beast CM Initial y position
+x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
+y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
 %Coordinates of beast blobs in beast frame.
-%Beast frame has its head on its x axis at y = 0.
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+
 Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 
@@ -52,14 +52,15 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history] = ...
-    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1);
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history] = ...
+    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a);
+
 
 toc
 
 %% Create some strings for plot detail
-str_T = ['T = ',num2str(T)];
-str_dt = ['dt = ',num2str(dt)];
+str_T = ['Total Time = ',num2str(sum(dt_history))];
+str_dt = ['Base dt = ',num2str(dt)];
 str_Time = 'Nondimensionalized by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
@@ -96,14 +97,14 @@ descr = {'Parameters:';
     str_COND_max;
     str_COND_min};
 text(.025,0.6,descr);
-%back to plotting data
+%back to data
 axes(ax2);
 plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'green'); %Begin at green
 hold on
-plot(x_cm_history(end), y_cm_history(end), 'Marker', 'o', 'MarkerSize', 2, ...
+plot(x_cm_history(end-1), y_cm_history(end-1), 'Marker', 'o', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'red'); %End at red
-plot(x_cm_history(2:end-1), y_cm_history(2:end-1),'Marker', '.', 'MarkerSize', 2, ...
+plot(x_cm_history(2:end-2), y_cm_history(2:end-2),'Marker', '.', 'MarkerSize', 2, ...
      'MarkerFaceColor', 'black');
 daspect([1,1,1])
 %plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
@@ -112,9 +113,39 @@ plot(x_Enc, y_Enc, 'Marker', '.', 'MarkerSize', 1, ...
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
 hold off
-
+%% Plotting velocity vs separation
+fig = figure(2);
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[.3 .1 .6 .8]);
+axes(ax1);
+descr = {'Parameters:';
+    str_T;
+    str_dt;
+    str_a;
+    str_s;
+    str_eps;
+    str_R;
+    str_d;
+    str_r_o;
+    str_phi_o;
+    str_theta_o;
+    str_B1;
+    str_B2;
+    str_COND_max;
+    str_COND_min};
+text(.025,0.6,descr);
+%back to plotting data
+axes(ax2);
+scatter(separation_history(2:end-1), Ux_history(2:end-1));
+hold on
+scatter(separation_history(2:end-1), Uy_history(2:end-1));
+legend('Ux','Uy','Location','Best')
+title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
+xlabel('Nondimensional Separation Distance (a/l_s)')
+ylabel('Nondimensional Swimming Speed')
+hold off
 %% Plot vector field at the last time step   %Dimensions may be wrong in here. 
-% fig = figure(2);
+% fig = figure(3);
 % ax1 = axes('Position',[0 0 1 1],'Visible','off');
 % ax2 = axes('Position',[.3 .1 .6 .8]);
 % axes(ax1);
