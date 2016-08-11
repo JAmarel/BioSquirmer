@@ -1,4 +1,4 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history]...
+function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history, time_history]...
     = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a)
 %Calls Solve_U at each increment to simulate time.
 
@@ -12,6 +12,7 @@ Steps = floor(T/dt_o); %Total number of increments
 
 %Initialize the empty arrays
 dt_history = zeros([Steps+1,1]);
+time_history = zeros([Steps+1,1]);
 
 x_history = zeros([Steps+1,length(xcoord)]);
 y_history = zeros([Steps+1,length(xcoord)]);
@@ -50,6 +51,7 @@ Uy_history(1,:) = 0;
 W_history(1,:) = 0;
 fx_history(1,:) = 0;
 fy_history(1,:) = 0;
+time_history(1,:) = 0;
 
 dt = dt_o;
 
@@ -62,14 +64,19 @@ for i = 1:Steps
     separation_history(i) = R - (r_cm_history(i) + a);
     
 %%% Scaling timesteps based on distance from enclosure
-    if separation_history(i) < .15*a
+    if separation_history(i) < .05*a
+        dt = dt_o/500;
+    elseif separation_history(i) < .1*a
+        dt = dt_o/100;
+    elseif separation_history(i) < .2*a
         dt = dt_o/50;
-    elseif separation_history(i) < .075*a
-        dt = dt_o/1000;
+    elseif separation_history(i) < .5*a
+        dt = dt_o/10;
     else
         dt = dt_o;
     end
     dt_history(i) = dt;
+    time_history(i+1) = dt + sum(time_history(i));
     
     %%%Beast rotation
     theta = theta_o + W*dt;
@@ -109,7 +116,8 @@ for i = 1:Steps
     W_history(i+1) = W;
     theta_history(i+1) = theta;
     
-    COND_history(i) = cond(Matrix);
+    % This calculation takes a lot of time
+    %COND_history(i) = cond(Matrix);
 end
 
 end

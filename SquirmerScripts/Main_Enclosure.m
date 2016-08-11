@@ -1,22 +1,22 @@
 tic
 
 %Simulation
-T = 2;
-dt = .01;
+T = 100;
+dt = 2;
 
 %Discretization
-a = 0.1;              %%% radius of the disk nondimensionalized by the Saffman length
+a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s = 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;        %%% radius of blobs
 
 %Enclosure
-R = 5*a;    %%% Radius of enclosure
-d = 2*s;    %%% Circumferential Enclosure Blob Spacing
+R = 10*a;    %%% Radius of enclosure
+d = 4*s;    %%% Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = -3*a;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi;       %%% Angle coordinate of beast cm from center of enclosure
-theta_o = 3*pi/4;   %%% Beast intial orientation (head direction)
+r_o = .35*R;         %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 3*pi/4;       %%% Angle coordinate of beast cm from center of enclosure
+theta_o = 5*pi/4;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -52,9 +52,10 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history] = ...
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history, time_history] = ...
     TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a);
 
+speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
 
 toc
 
@@ -75,11 +76,6 @@ str_B2 = ['B2 = ',num2str(B2)];
 str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
 str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
-%% Plot the cm trajectory
-fig = figure(1);
-ax1 = axes('Position',[0 0 1 1],'Visible','off');
-ax2 = axes('Position',[.3 .1 .6 .8]);
-axes(ax1);
 descr = {'Parameters:';
     str_T;
     str_dt;
@@ -96,6 +92,12 @@ descr = {'Parameters:';
     str_B2;
     str_COND_max;
     str_COND_min};
+
+%% Plot the cm trajectory
+fig = figure(1);
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[.3 .1 .6 .8]);
+axes(ax1);
 text(.025,0.6,descr);
 %back to data
 axes(ax2);
@@ -114,56 +116,27 @@ plot(x_Enc, y_Enc, 'Marker', '.', 'MarkerSize', 1, ...
 axis off
 hold off
 %% Plotting velocity vs separation
-fig = figure(2);
-ax1 = axes('Position',[0 0 1 1],'Visible','off');
-ax2 = axes('Position',[.3 .1 .6 .8]);
-axes(ax1);
-descr = {'Parameters:';
-    str_T;
-    str_dt;
-    str_a;
-    str_s;
-    str_eps;
-    str_R;
-    str_d;
-    str_r_o;
-    str_phi_o;
-    str_theta_o;
-    str_B1;
-    str_B2;
-    str_COND_max;
-    str_COND_min};
-text(.025,0.6,descr);
-%back to plotting data
-axes(ax2);
-scatter(separation_history(2:end-1), Ux_history(2:end-1));
-hold on
-scatter(separation_history(2:end-1), Uy_history(2:end-1));
-legend('Ux','Uy','Location','Best')
-title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
-xlabel('Nondimensional Separation Distance (a/l_s)')
-ylabel('Nondimensional Swimming Speed')
-hold off
+% fig = figure(2);
+% ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% ax2 = axes('Position',[.3 .1 .6 .8]);
+% axes(ax1);
+% text(.025,0.6,descr);
+% %back to plotting data
+% axes(ax2);
+% scatter(separation_history(2:end-1), Ux_history(2:end-1));
+% hold on
+% scatter(separation_history(2:end-1), Uy_history(2:end-1));
+% scatter(separation_history(2:end-1), speed_history(2:end-1));
+% legend('Ux','Uy','Speed','Location','Best')
+% title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
+% xlabel('Nondimensional Separation Distance (a/l_s)')
+% ylabel('Nondimensional Swimming Speed')
+% hold off
 %% Plot vector field at the last time step   %Dimensions may be wrong in here. 
 % fig = figure(3);
 % ax1 = axes('Position',[0 0 1 1],'Visible','off');
 % ax2 = axes('Position',[.3 .1 .6 .8]);
 % axes(ax1);
-% descr = {'Parameters:';
-%     str_T;
-%     str_dt;
-%     str_a;
-%     str_s;
-%     str_eps;
-%     str_R;
-%     str_d;
-%     str_r_o;
-%     str_phi_o;
-%     str_theta_o;
-%     str_B1;
-%     str_B2;
-%     str_COND_max;
-%     str_COND_min};
 % text(.025,0.6,descr);
 % %back to plotting data
 % axes(ax2);
@@ -190,6 +163,18 @@ hold off
 % quiver(X, Y, VX, VY, 'b')
 % 
 % xlim([x_cm_history(end) - 4*a x_cm_history(end) + 4*a]);
-% ylim([y_cm_history(end) - 4*a y_cm_history(end) + 4*a]);
+% ylim([y_cm_history(end) - 4*a y_cm_histo  ry(end) + 4*a]);
 % 
 % hold off
+%% Plotting separation vs simulation time
+% fig = figure(4);
+% ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% ax2 = axes('Position',[.3 .1 .6 .8]);
+% axes(ax1);
+% text(.025,0.6,descr);
+% %back to plotting data
+% axes(ax2);
+% scatter(time_history(2:end-1), separation_history(2:end-1));
+% title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
+% xlabel('Nondimensional Time')
+% ylabel('Nondimensional Separation')

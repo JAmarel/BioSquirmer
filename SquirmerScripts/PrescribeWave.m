@@ -2,7 +2,7 @@ function [VxRim, VyRim, B1, B2] = PrescribeWave(NRim)
 %Prescribes single squirmer wave
 %   Detailed explanation goes here
 
-B1 = .1;            %%% tangential velocity strength (streaming)
+B1 = 1;            %%% tangential velocity strength (streaming)
 B2 = 0;   
 
 VRimTheta = zeros([NRim, 1]); %%% tangential velocity at the rim of the disk
