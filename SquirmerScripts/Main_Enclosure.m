@@ -1,8 +1,8 @@
 tic
 
 %Simulation
-T = 500;
-dt = 20;
+T = 100;
+dt = 10;
 
 %Discretization
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -52,9 +52,10 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history] = ...
+[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history, time_history] = ...
     TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a);
 
+speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
 
 toc
 
@@ -75,11 +76,6 @@ str_B2 = ['B2 = ',num2str(B2)];
 str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
 str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
-%% Plot the cm trajectory
-fig = figure(1);
-ax1 = axes('Position',[0 0 1 1],'Visible','off');
-ax2 = axes('Position',[.3 .1 .6 .8]);
-axes(ax1);
 descr = {'Parameters:';
     str_T;
     str_dt;
@@ -96,6 +92,12 @@ descr = {'Parameters:';
     str_B2;
     str_COND_max;
     str_COND_min};
+
+%% Plot the cm trajectory
+fig = figure(1);
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[.3 .1 .6 .8]);
+axes(ax1);
 text(.025,0.6,descr);
 %back to data
 axes(ax2);
@@ -149,21 +151,6 @@ hold off
 % ax1 = axes('Position',[0 0 1 1],'Visible','off');
 % ax2 = axes('Position',[.3 .1 .6 .8]);
 % axes(ax1);
-% descr = {'Parameters:';
-%     str_T;
-%     str_dt;
-%     str_a;
-%     str_s;
-%     str_eps;
-%     str_R;
-%     str_d;
-%     str_r_o;
-%     str_phi_o;
-%     str_theta_o;
-%     str_B1;
-%     str_B2;
-%     str_COND_max;
-%     str_COND_min};
 % text(.025,0.6,descr);
 % %back to plotting data
 % axes(ax2);
@@ -193,3 +180,15 @@ hold off
 % ylim([y_cm_history(end) - 4*a y_cm_history(end) + 4*a]);
 % 
 % hold off
+%% Plotting separation vs simulation time
+% fig = figure(4);
+% ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% ax2 = axes('Position',[.3 .1 .6 .8]);
+% axes(ax1);
+% text(.025,0.6,descr);
+% %back to plotting data
+% axes(ax2);
+% scatter(time_history(2:end-1), separation_history(2:end-1));
+% title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
+% xlabel('Nondimensional Time')
+% ylabel('Nondimensional Separation')
