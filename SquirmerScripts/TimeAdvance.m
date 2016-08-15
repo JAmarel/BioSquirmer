@@ -62,13 +62,27 @@ for i = 1:Steps
     separation_history(i) = R - (r_cm_history(i) + a);
     
 %%% Scaling timesteps based on distance from enclosure
-    if separation_history(i) < .15*a
-        dt = dt_o/50;
-    elseif separation_history(i) < .075*a
-        dt = dt_o/1000;
-    else
-        dt = dt_o;
-    end
+%     if separation_history(i) < .5*a
+%         dt = dt_o/50;
+%     elseif separation_history(i) < 1*a
+%         dt = dt_o/10;
+%     else
+%         dt = dt_o;
+%     end
+
+% Calculate the radial velocity
+    V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
+
+%%% Limit radial distance traveled
+%     if separation_history(i) < .5*a
+%         dt = separation_history(i)/(4*;
+%     elseif separation_history(i) < 1*a
+%         dt = dt_o/10;
+%     else
+%         dt = dt_o;
+%     end
+
+
     dt_history(i) = dt;
     
     %%%Beast rotation
@@ -109,7 +123,7 @@ for i = 1:Steps
     W_history(i+1) = W;
     theta_history(i+1) = theta;
     
-    COND_history(i) = cond(Matrix);
+    %COND_history(i) = cond(Matrix);
 end
 
 end
