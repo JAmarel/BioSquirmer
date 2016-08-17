@@ -71,6 +71,8 @@ for i=1:n
 end
 toc
 
+
+%% Plotting
 figure(1)
 semilogx(Radii, ActiveSpeeds, 'k-')
 hold on
