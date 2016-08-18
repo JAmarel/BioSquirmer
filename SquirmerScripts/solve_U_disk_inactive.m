@@ -109,8 +109,8 @@ Matrix = [M11 M12 ;...
        
  %scondition = cond(Matrix);
  
- Ux = Ux* ones([N,1]);
- Uy = Uy* ones([N,1]);
+ Ux = Ux * ones([N,1]);
+ Uy = Uy * ones([N,1]);
 
  c_coefs = [Ux; Uy];
  % [Ux, Uy]

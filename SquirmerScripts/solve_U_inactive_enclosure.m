@@ -129,8 +129,13 @@ Matrix = [M11 M12; ...
  fx_hat_rim = fx_hat(end-NRim+1:end);
  fy_hat_rim = fy_hat(end-NRim+1:end);
  
+ %These are wrong?
  Fx_hat = sum(fx_hat);
  Fy_hat = sum(fy_hat);
+ 
+ %Make these work somehow
+ F_hat_x = Ux_hat/HPW_mobility(a);
+ F_hat_y = Uy_hat/HPW_mobility(a);
  
  Ux = (-1/Fx_hat)*(sum(VxRim.*fx_hat_rim) + sum(VyRim.*fy_hat_rim));
  Uy = (-1/Fy_hat)*(sum(VxRim.*fx_hat_rim) + sum(VyRim.*fy_hat_rim));

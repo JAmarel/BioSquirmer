@@ -9,12 +9,14 @@ RecipSpeeds = zeros([1, n]);
 
 for i=1:n
     a = Radii(i);
-    s = 0.1 * a;          %%% spacing between neighboring blobs
-    epsilon = s/8;       %%% radius of the blob
+    s = 0.1 * a;         %%% spacing between neighboring blobs
+    epsilon = s/8;      %%% radius of the blob
+    theta_o = 0;       %%% Beast intial orientation (head direction)
 
     %Velocity of inactive disk
-    Ux1 = 1; 
-    Uy1 = 0;
+    U1 = 1;
+    Ux1 = U1*cos(theta_o); 
+    Uy1 = U1*sin(theta_o);
 
     [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
@@ -57,16 +59,15 @@ for i=1:n
     % hat corresponds to the conjugate scenario
     F_hat_x = Ux1/HPW_mobility(a);
     F_hat_y = Uy1/HPW_mobility(a);
+    F_hat = U1/HPW_mobility(a);
+    
+    %FNet1 gives perfect agreement, but is incorrect?
+    FNet1 = sqrt(FxNet1^2 + FyNet1^2);
 
 
     % These terms are from equation 12 in our notes
-    LHS = F_hat_x*Ux2 + F_hat_y*Uy2;
-    RHS = -(sum(VxRim.*FxRim1) + sum(VyRim.*FyRim1));
-    Ratio = LHS/RHS; %Should be close to 1
-
-    %This is true iff velocity is only in x
-    Ux = (1/(FxNet1))*RHS; %Ux of the active swimmer as predicted by the recip thm
-    RecipSpeeds(i) = Ux;
+    U = (-1/(F_hat))*(sum(VxRim.*FxRim1) + sum(VyRim.*FyRim1));
+    RecipSpeeds(i) = U;
 
 end
 toc
