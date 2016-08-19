@@ -54,19 +54,16 @@ fx_history(1,:) = 0;
 fy_history(1,:) = 0;
 time_history(1,:) = 0;
 
-dt = dt_o;
 
 for i = 1:Steps
     [fx, fy, Ux, Uy, W, ~, ~] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
-
-    % Scale timesteps based on how close the enclosure is
+  
+%%% Scaling timesteps based on distance from enclosure
     r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);
     separation_history(i) = R - (r_cm_history(i) + a);
-    
-%%% Scaling timesteps based on distance from enclosure
     if separation_history(i) < .5*a
-        dt = dt_o/100;
+        dt = dt_o/75;
     elseif separation_history(i) < 1.5*a
         dt = dt_o/10;
     elseif separation_history(i) < 2.5*a
@@ -74,58 +71,53 @@ for i = 1:Steps
     else
         dt = dt_o;
     end
+    
+    %%% If velocity unexpectedly rises, go back to the previous time step and
+    %%% increment for an extra, small, dt
+       if i>2 && (sqrt(Ux^2 + Uy^2) - sqrt(Ux_history(i-1)^2 + Uy_history(i-1)^2)) > 5*sqrt(Ux_history(i-1)^2 + Uy_history(i-1)^2)
+           Ux = Ux_history(i-1);
+           Uy = Uy_history(i-1);
+           W = W_history(i-1);
+           dt = dt_history(i-1)/5;
+       end
+            dt_history(i) = dt;
+            time_history(i+1) = dt + sum(time_history(i));
 
-% Calculate the radial velocity
-    %V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
+            %%%Beast rotation
+            theta = theta_o + W*dt;
 
-%%% Limit radial distance traveled
-%     if separation_history(i) < .5*a
-%         dt = separation_history(i)/(4*;
-%     elseif separation_history(i) < 1*a
-%         dt = dt_o/10;
-%     else
-%         dt = dt_o;
-%     end
+            %Prescribe wave again account for W*dt.
+            [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, W*dt);
 
+            %Shift to beast frame
+            %Translate origin at beast center
+            xcoord = xcoord - x_cm_history(i);
+            ycoord = ycoord - y_cm_history(i);
 
-    dt_history(i) = dt;
-    time_history(i+1) = dt + sum(time_history(i));
-    
-    %%%Beast rotation
-    theta = theta_o + W*dt;
-    
-    %Prescribe wave again account for W*dt.
-    [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, W*dt);
- 
-    %Shift to beast frame
-    %Translate origin at beast center
-    xcoord = xcoord - x_cm_history(i);
-    ycoord = ycoord - y_cm_history(i);
-    
-    %Rotate beast coordinates due to W
-    [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, W*dt);
+            %Rotate beast coordinates due to W
+            [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, W*dt);
 
-    %Back to Lab Frame.
-    xcoord = xcoord + x_cm_history(i);
-    ycoord = ycoord + y_cm_history(i);
-    
-    %%%Translation
-    xcoord = xcoord + Ux*dt;
-    ycoord = ycoord + Uy*dt;
-    
-    %Fill in resulting (future) data
-    x_history(i+1,:) = xcoord;
-    y_history(i+1,:) = ycoord;
-    
-    fx_history(i+1,:) = fx;
-    fy_history(i+1,:) = fy;
-    
-    x_cm_history(i+1) = xcoord(1);
-    y_cm_history(i+1) = ycoord(1);
-    
-    Ux_history(i+1) = Ux;
-    Uy_history(i+1) = Uy;
+            %Back to Lab Frame.
+            xcoord = xcoord + x_cm_history(i);
+            ycoord = ycoord + y_cm_history(i);
 
-    W_history(i+1) = W;
-    theta_history(i+1) = theta;
+            %%%Translation
+            xcoord = xcoord + Ux*dt;
+            ycoord = ycoord + Uy*dt;
+
+            %Fill in resulting (future) data
+            x_history(i+1,:) = xcoord;
+            y_history(i+1,:) = ycoord;
+
+            fx_history(i+1,:) = fx;
+            fy_history(i+1,:) = fy;
+
+            x_cm_history(i+1) = xcoord(1);
+            y_cm_history(i+1) = ycoord(1);
+
+            Ux_history(i+1) = Ux;
+            Uy_history(i+1) = Uy;
+
+            W_history(i+1) = W;
+            theta_history(i+1) = theta;
 end  

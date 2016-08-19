@@ -1,7 +1,7 @@
 tic
 
 %Simulation
-T = 10;
+T = 50;
 dt = .05;
 
 %Discretization
