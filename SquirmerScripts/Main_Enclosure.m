@@ -1,22 +1,22 @@
 tic
 
 %Simulation
-T = 100;
-dt = 10;
+T = 10;
+dt = .05;
 
 %Discretization
-a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
+a = .1;              %%% radius of the disk nondimensionalized by the Saffman length
 s = 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;        %%% radius of blobs
 
 %Enclosure
-R = 5*a;    %%% Radius of enclosure
-d = 10*s;    %%% Circumferential Enclosure Blob Spacing
+R = 10*a;    %%% Radius of enclosure
+d = 2*s;    %%% Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 0*R;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = .8*pi;       %%% Angle coordinate of beast cm from center of enclosure
-theta_o = pi/2;   %%% Beast intial orientation (head direction)
+r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
+phi_o = 0*pi;       %%% Angle coordinate of beast cm from center of enclosure
+theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -52,15 +52,15 @@ ycoord = ycoord + y_o;
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
-[Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history, time_history] = ...
-    TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a);
+[Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history]...
+    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a);
 
 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
 
 toc
 
 %% Create some strings for plot detail
-str_T = ['Total Time = ',num2str(sum(dt_history))];
+str_T = ['Total Time = ',num2str(T)];
 str_dt = ['Base dt = ',num2str(dt)];
 str_Time = 'Nondimensionalized by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
@@ -73,8 +73,8 @@ str_phi_o = ['phi_o = ',num2str(phi_o)];
 str_theta_o = ['theta_o = ',num2str(theta_o)];
 str_B1 = ['B1 = ',num2str(B1)];
 str_B2 = ['B2 = ',num2str(B2)];
-str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
-str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
+%str_COND_max = ['COND_m_a_x = ', num2str(max(COND_history))];
+%str_COND_min = ['COND_m_i_n = ', num2str(min(COND_history))];
 
 descr = {'Parameters:';
     str_T;
@@ -89,9 +89,7 @@ descr = {'Parameters:';
     str_phi_o;
     str_theta_o;
     str_B1;
-    str_B2;
-    str_COND_max;
-    str_COND_min};
+    str_B2};
 
 %% Plot the cm trajectory
 fig = figure(1);
@@ -101,17 +99,14 @@ axes(ax1);
 text(.025,0.6,descr);
 %back to data
 axes(ax2);
-plot(x_cm_history(1), y_cm_history(1), 'Marker', 'o', 'MarkerSize', 2, ...
-     'MarkerFaceColor', 'green'); %Begin at green
+
+scatter(x_cm_history(1), y_cm_history(1), '.', 'g'); %Begin at green
 hold on
-plot(x_cm_history(end-1), y_cm_history(end-1), 'Marker', 'o', 'MarkerSize', 2, ...
-     'MarkerFaceColor', 'red'); %End at red
-plot(x_cm_history(2:end-2), y_cm_history(2:end-2),'Marker', '.', 'MarkerSize', 2, ...
-     'MarkerFaceColor', 'black');
+scatter(x_cm_history(end-1), y_cm_history(end-1), '.', 'r'); %End at red
+scatter(x_cm_history(2:end-2), y_cm_history(2:end-2), '.', 'k');
 daspect([1,1,1])
 %plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
-plot(x_Enc, y_Enc, 'Marker', '.', 'MarkerSize', 1, ...
-     'MarkerFaceColor', 'black');
+scatter(x_Enc, y_Enc, '.', 'b');
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off
 hold off
