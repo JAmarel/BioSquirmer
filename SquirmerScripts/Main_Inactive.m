@@ -3,11 +3,13 @@
 
 % 1 
 tic
-n = 20; %Radius sampling
+n = 30; %Radius sampling
 Radii = logspace(-1.5,3,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
-m = 1; %Spacing sampling
+m = 3; %Spacing sampling
 
+HPWMobility = zeros([n,m]);
+NumericalMobility = zeros([n,m]);
 
 ActiveUx = zeros([n, m]);
 ActiveUy = zeros([n,m]);
@@ -19,14 +21,15 @@ RecipU = zeros([n,m]);
 
 for i=1:n
     a = Radii(i);
-        Spacings = linspace(.1, .1, m);
+        Spacings = linspace(.1, .08, m);
     for j=1:m
         s = Spacings(j)*a;         %%% spacing between neighboring blobs
         epsilon = s/8;      %%% radius of the blob
-        theta_o = 0.01;       %%% Beast intial orientation (head direction)
+        theta_o = 0;       %%% Beast intial orientation (head direction)
 
         %Velocity of inactive disk
         U_hat = 1;
+        
         
         Ux_hat = U_hat*cos(theta_o); 
         Uy_hat = U_hat*sin(theta_o);
@@ -113,11 +116,38 @@ for i=1:n
         end
         
         RecipU(i,j) = sqrt(RecipUy(i,j)^2 + RecipUx(i,j)^2);
+        
+        % Mobility calculations currently only valid when theta_o = 0 and
+        % U_hat = 1 = Ux_hat
+        HPWMobility(i,j) = HPW_mobility(a);
+        NumericalMobility(i,j) = 1/FxNet_hat_1;
     end
 end
 toc
 
-        %% Plotting
+        %% Plotting Speeds
+% for j=1:m
+%     fig = figure(j);
+%     str_spacing = ['Spacing (s/a) = ', num2str(Spacings(j))];
+%     descr = {'Parameters:';
+%     str_spacing};
+%     ax1 = axes('Position',[0 0 1 1],'Visible','off');
+%     ax2 = axes('Position',[.3 .1 .6 .8]);
+%     axes(ax1);
+%     text(.025,0.6,descr);
+%     %back to data
+%     axes(ax2);
+%     semilogx(Radii, ActiveU(:,j), 'k-')
+%     hold on
+%     semilogx(Radii, RecipU(:,j), 'bo')
+%     title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
+%     xlabel('Log Scale Nondimensional Radius (a/l_s)')
+%     ylabel('Nondimensional Swimming Speed U/(B1/2)')
+%     hold off
+%     %saveas(gcf,[num2str(j),'.png']);
+% end
+
+        %% Plotting Mobility
 for j=1:m
     fig = figure(j);
     str_spacing = ['Spacing (s/a) = ', num2str(Spacings(j))];
@@ -128,13 +158,15 @@ for j=1:m
     axes(ax1);
     text(.025,0.6,descr);
     %back to data
-    axes(ax2);
-    semilogx(Radii, ActiveU(:,j), 'k-')
+    axes(ax2); %#ok<*LAXES>
+    scatter(Radii, HPWMobility(:,j), 'k', '.')
     hold on
-    semilogx(Radii, RecipU(:,j), 'bo')
-    title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
+    scatter(Radii, NumericalMobility(:,j), 'b')
+    set(gca,'xscale','log')
+    legend('HPW Mobility', 'Numerical Mobility');
+    title('Approximated HPW Mobility vs. Numerical Mobility','FontSize',16,'FontWeight','bold')
     xlabel('Log Scale Nondimensional Radius (a/l_s)')
-    ylabel('Nondimensional Swimming Speed U/(B1/2)')
+    ylabel('Mobility')
     hold off
-    %saveas(gcf,[num2str(j),'.png']);
+    saveas(gcf,num2str(j),'eps');
 end
