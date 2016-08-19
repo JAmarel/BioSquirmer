@@ -1,5 +1,5 @@
-function [Ux_history, Uy_history, W_history, x_history, y_history, theta_history, x_cm_history, y_cm_history, fx_history, fy_history, COND_history, dt_history, r_cm_history, separation_history, time_history]...
-    = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, B1, R, a)
+function [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history]...
+    = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -32,7 +32,8 @@ Uy_history = zeros([Steps+1,1]);
 W_history = zeros([Steps+1,1]);
 theta_history = zeros([Steps+1,1]);
 
-COND_history = zeros([Steps,1]);
+% Previously, needed to calculate the condition number at each step
+% COND_history = zeros([Steps,1]);
 
 %Initial Positions
 x_history(1,:) = xcoord;
@@ -56,7 +57,7 @@ time_history(1,:) = 0;
 dt = dt_o;
 
 for i = 1:Steps
-    [fx, fy, Ux, Uy, W, Matrix, N] = ...
+    [fx, fy, Ux, Uy, W, ~, ~] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
 
     % Scale timesteps based on how close the enclosure is
@@ -64,16 +65,18 @@ for i = 1:Steps
     separation_history(i) = R - (r_cm_history(i) + a);
     
 %%% Scaling timesteps based on distance from enclosure
-%     if separation_history(i) < .5*a
-%         dt = dt_o/50;
-%     elseif separation_history(i) < 1*a
-%         dt = dt_o/10;
-%     else
-%         dt = dt_o;
-%     end
+    if separation_history(i) < .5*a
+        dt = dt_o/100;
+    elseif separation_history(i) < 1.5*a
+        dt = dt_o/10;
+    elseif separation_history(i) < 2.5*a
+        dt = dt_o/2;
+    else
+        dt = dt_o;
+    end
 
 % Calculate the radial velocity
-    V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
+    %V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
 
 %%% Limit radial distance traveled
 %     if separation_history(i) < .5*a
