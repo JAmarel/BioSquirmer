@@ -72,6 +72,8 @@ for i = 1:Steps
         dt = dt_o;
     end
     
+    PercentCompleted = 100*i/Steps
+    
     %%% If velocity unexpectedly rises, make the next dt smaller
     %%% history arrays are saved at i+1, so index i corresponds to the
     %%% previous timestep.

@@ -65,7 +65,7 @@ str_dt = ['Base dt = ',num2str(dt)];
 str_Time = 'Nondimensionalized by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
-str_eps = ['epsilon = ',num2str(s)];
+str_eps = ['epsilon = ',num2str(epsilon)];
 str_R = ['R = ',num2str(R)];
 str_d = ['d = ',num2str(d)];
 str_r_o = ['r_o = ',num2str(r_o)];
