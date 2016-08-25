@@ -72,15 +72,18 @@ for i = 1:Steps
         dt = dt_o;
     end
     
-    %%% If velocity unexpectedly rises, go back to the previous time step and
-    %%% increment for an extra, small, dt
-       if i>2 && (sqrt(Ux^2 + Uy^2) - sqrt(Ux_history(i-1)^2 + Uy_history(i-1)^2)) > 5*sqrt(Ux_history(i-1)^2 + Uy_history(i-1)^2)
-           Ux = Ux_history(i-1);
-           Uy = Uy_history(i-1);
-           W = W_history(i-1);
-           dt = dt_history(i-1)/5;
+    %%% If velocity unexpectedly rises, make the next dt smaller
+    %%% history arrays are saved at i+1, so index i corresponds to the
+    %%% previous timestep.
+       if i>2 && sqrt(Ux^2 + Uy^2) > 3*sqrt(Ux_history(i)^2 + Uy_history(i)^2)
+%            Ux = Ux_history(i);
+%            Uy = Uy_history(i);
+%            W = W_history(i);
+%            dt = dt_history(i)/10;
+             ratio = sqrt(Ux_history(i)^2 + Uy_history(i)^2) / sqrt(Ux^2 + Uy^2);
+             dt = ratio*dt;
        end
-            dt_history(i) = dt;
+            dt_history(i+1) = dt;
             time_history(i+1) = dt + sum(time_history(i));
 
             %%%Beast rotation
