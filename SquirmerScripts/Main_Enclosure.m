@@ -1,17 +1,16 @@
-tic
+ tic
 
 %Simulation
-T = 50;
+T = 20;
 dt = .05;
 
 %Discretization
 a = .1;              %%% radius of the disk nondimensionalized by the Saffman length
-s = 0.1 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/8;        %%% radius of blobs
+s = 0.08 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/10;        %%% radius of blobs
 
 %Enclosure
 R = 10*a;    %%% Radius of enclosure
-d = 2*s;    %%% Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
 r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
@@ -42,7 +41,7 @@ VyRim = VyRim/(B1/2);
 
 %Enclosure Blob Coordinates.
 %Enclosure is a ring centered about the lab origin.
-[x_Enc, y_Enc] = DiscretizeEnclosure(R,d); 
+[x_Enc, y_Enc] = DiscretizeEnclosure(R,s); 
 
 %Translate beast geometric center to the chosen initial position in enclosure frame.
 xcoord = xcoord + x_o;
@@ -67,7 +66,6 @@ str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
 str_eps = ['epsilon = ',num2str(epsilon)];
 str_R = ['R = ',num2str(R)];
-str_d = ['d = ',num2str(d)];
 str_r_o = ['r_o = ',num2str(r_o)];
 str_phi_o = ['phi_o = ',num2str(phi_o)];
 str_theta_o = ['theta_o = ',num2str(theta_o)];
@@ -84,7 +82,6 @@ descr = {'Parameters:';
     str_s;
     str_eps;
     str_R;
-    str_d;
     str_r_o;
     str_phi_o;
     str_theta_o;
