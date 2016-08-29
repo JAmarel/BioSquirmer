@@ -1,5 +1,5 @@
 function [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history]...
-    = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a)
+    = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale)
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
@@ -57,7 +57,7 @@ time_history(1,:) = 0;
 
 for i = 1:Steps
     [fx, fy, Ux, Uy, W, ~, ~] = ...
-    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim);
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale);
   
 %%% Scaling timesteps based on distance from enclosure
     r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);

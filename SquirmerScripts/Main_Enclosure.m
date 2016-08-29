@@ -1,20 +1,22 @@
  tic
 
 %Simulation
-T = 20;
-dt = .05;
+T = 100;
+dt = 10;
 
 %Discretization
-a = .1;              %%% radius of the disk nondimensionalized by the Saffman length
-s = 0.08 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/10;        %%% radius of blobs
+a = 1.2;              %%% radius of the disk nondimensionalized by the Saffman length
+s = 0.1 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/8;        %%% radius of blobs
+
+Scale = 10/a; %%% Scales the torque row of MX=C. Helps with cond.
 
 %Enclosure
-R = 10*a;    %%% Radius of enclosure
+R = 20*a;    %%% Radius of enclosure
 
 %Initial Conditions
-r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi;       %%% Angle coordinate of beast cm from center of enclosure
+r_o = .2*R;         %%% Radial coordinate of beast cm from center of enclosure
+phi_o = -.1*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
 theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
@@ -47,12 +49,12 @@ VyRim = VyRim/(B1/2);
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
 
-%Grab the head coordinate for plotting purposes
+%Grab the head coordinate for plotting
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
 [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history]...
-    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a);
+    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale);
 
 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
 
@@ -61,7 +63,7 @@ toc
 %% Create some strings for plot detail
 str_T = ['Total Time = ',num2str(T)];
 str_dt = ['Base dt = ',num2str(dt)];
-str_Time = 'Nondimensionalized by B_1/(2*l_s)';
+str_Time = 'Nondimen by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
 str_eps = ['epsilon = ',num2str(epsilon)];

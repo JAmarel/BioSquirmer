@@ -1,5 +1,5 @@
 function [fx, fy, Ux, Uy, W, Matrix, N] = ...
-    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale)
 
 %%% Now including rotation and enclosure. M = 7x7
 %%% Relaxed the force constraint on the enclosure (this constrain remains in solve_u_strict)
@@ -109,7 +109,7 @@ Matrix = [M11 M12 [zeros([NEnc,1]); -ones([NBlobs,1])] zeros([N,1]) [zeros([NEnc
           M21 M22 zeros([N,1]) [zeros([NEnc,1]); -ones([NBlobs,1])] [zeros([NEnc,1]); -xcoord.'] zeros([N,1]) [-ones([NEnc,1]); zeros([NBlobs,1])]; ...
           -[zeros([1,NEnc]) ones([1, NBlobs])] zeros([1, N]) 0 0 0 0 0; ...
           zeros([1, N]) -[zeros([1,NEnc]) ones([1, NBlobs])] 0 0 0 0 0; ...
-          [zeros([1,NEnc]) ycoord] [zeros([1,NEnc]) -xcoord] 0 0 0 0 0];
+          [zeros([1,NEnc]) Scale*ycoord] [zeros([1,NEnc]) -Scale*xcoord] 0 0 0 0 0];
        
  %scondition = cond(Matrix);
  
