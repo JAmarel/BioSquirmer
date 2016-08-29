@@ -1,29 +1,30 @@
  tic
 
 %Simulation
+% dt's are scaled in TimeAdvance depending on distance from enclosure
 T = 100;
-dt = 10;
+dt = 1;
 
 %Discretization
-a = 1.2;              %%% radius of the disk nondimensionalized by the Saffman length
-s = 0.1 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/8;        %%% radius of blobs
+a = 3;              %%% radius of the disk nondimensionalized by the Saffman length
+s = 0.03 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/4;        %%% radius of blobs
 
 Scale = 10/a; %%% Scales the torque row of MX=C. Helps with cond.
 
 %Enclosure
-R = 20*a;    %%% Radius of enclosure
+R = 10*a;    %%% Radius of enclosure
 
 %Initial Conditions
 r_o = .2*R;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = -.1*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
+phi_o = -pi/4;       %%% Angle coordinate of beast cm from center of enclosure
 theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
 %Coordinates of beast blobs in beast frame.
-[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+[xcoord, ycoord, BlobsPerLayer] = Discretize_Single_Shell_Disk(a,s);
 
 Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
