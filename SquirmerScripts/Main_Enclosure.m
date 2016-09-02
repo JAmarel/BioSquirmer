@@ -1,29 +1,31 @@
  tic
 
 %Simulation
-T = 20;
-dt = .05;
+T = 150;
+dt = 1;
 
 %Discretization
-a = .1;              %%% radius of the disk nondimensionalized by the Saffman length
-s = 0.08 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/10;        %%% radius of blobs
+a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+s = 0.1 * a;          %%% radial spacing between neighboring blobs
+epsilon = s/8;        %%% radius of blobs
 
 %Enclosure
 R = 10*a;    %%% Radius of enclosure
 
 %Initial Conditions
 r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = 0*pi;       %%% Angle coordinate of beast cm from center of enclosure
-theta_o = pi/4;   %%% Beast intial orientation (head direction)
+phi_o = -pi/4;       %%% Angle coordinate of beast cm from center of enclosure
+theta_o = .8*pi/2;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
+
+
 %Coordinates of beast blobs in beast frame.
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
-Nblobs = sum(BlobsPerLayer); %%% Number of blobs in the beast
+Nbeast = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 
 %Rotate coordinates according to theta_o
@@ -102,7 +104,7 @@ hold on
 scatter(x_cm_history(end-1), y_cm_history(end-1), '.', 'r'); %End at red
 scatter(x_cm_history(2:end-2), y_cm_history(2:end-2), '.', 'k');
 daspect([1,1,1])
-%plot(xcoord(Nblobs - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
+%plot(xcoord(Nbeast - NRim + 1:end), ycoord(Nblobs - NRim + 1:end), 'r.','LineWidth', 1)
 scatter(x_Enc, y_Enc, '.', 'b');
 %plot(x_head, y_head, 'ko', 'LineWidth', 1)
 axis off

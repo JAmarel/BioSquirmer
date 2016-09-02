@@ -63,7 +63,7 @@ for i = 1:Steps
     r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);
     separation_history(i) = R - (r_cm_history(i) + a);
     if separation_history(i) < .5*a
-        dt = dt_o/75;
+        dt = dt_o/100;
     elseif separation_history(i) < 1.5*a
         dt = dt_o/10;
     elseif separation_history(i) < 2.5*a
