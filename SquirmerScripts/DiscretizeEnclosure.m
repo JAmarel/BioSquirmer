@@ -18,8 +18,8 @@ for i=1:Nblobs
 end
 
 % Adding another enclosure layer radially separated (outward) R -> (R + s)
-% xcoord = [xcoord (1+s/R)*xcoord (1+2*s/R)*xcoord];
-% ycoord = [ycoord (1+s/R)*ycoord (1+2*s/R)*ycoord];
+% xcoord = [xcoord (1+3*s/R)*xcoord];
+% ycoord = [ycoord (1+3*s/R)*ycoord];
 
 end
 

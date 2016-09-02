@@ -23,7 +23,7 @@ y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
 
 %Coordinates of beast blobs in beast frame.
-[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+[xcoord, ycoord, BlobsPerLayer] = Discretize_Single_Shell_Disk(a,s);
 
 Nbeast = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
@@ -49,12 +49,12 @@ VyRim = VyRim/(B1/2);
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
 
-%Grab the head coordinate for plotting purposes
+%Grab the head coordinate for plotting
 x_head = xcoord(end - NRim + 1);
 y_head = ycoord(end - NRim + 1);
 
 [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history]...
-    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a);
+    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale);
 
 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
 
@@ -63,7 +63,7 @@ toc
 %% Create some strings for plot detail
 str_T = ['Total Time = ',num2str(T)];
 str_dt = ['Base dt = ',num2str(dt)];
-str_Time = 'Nondimensionalized by B_1/(2*l_s)';
+str_Time = 'Nondimen by B_1/(2*l_s)';
 str_a = ['a = ',num2str(a)];
 str_s = ['s = ',num2str(s)];
 str_eps = ['epsilon = ',num2str(epsilon)];

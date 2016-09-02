@@ -1,5 +1,5 @@
 function [fx, fy, Ux, Uy, W, Matrix, N] = ...
-    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim)
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale)
 
 %%% Now including rotation and enclosure. M = 7x7
 %%% Relaxed the force constraint on the enclosure (this constrain remains in solve_u_strict)
