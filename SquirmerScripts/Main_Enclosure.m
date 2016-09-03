@@ -8,6 +8,7 @@ dt = 1;
 a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
 s = 0.1 * a;          %%% radial spacing between neighboring blobs
 epsilon = s/8;        %%% radius of blobs
+Scale = 10/a;
 
 %Enclosure
 R = 10*a;    %%% Radius of enclosure
@@ -23,7 +24,7 @@ y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
 
 %Coordinates of beast blobs in beast frame.
-[xcoord, ycoord, BlobsPerLayer] = Discretize_Single_Shell_Disk(a,s);
+[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
 Nbeast = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
