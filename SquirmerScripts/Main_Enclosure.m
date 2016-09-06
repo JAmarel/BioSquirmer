@@ -1,7 +1,7 @@
  tic
 
 %Simulation
-T = 150;
+T = 100;
 dt = 1;
 
 %Discretization
@@ -14,9 +14,9 @@ Scale = 10/a;
 R = 10*a;    %%% Radius of enclosure
 
 %Initial Conditions
-r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
+r_o = .35*R;         %%% Radial coordinate of beast cm from center of enclosure
 phi_o = -pi/4;       %%% Angle coordinate of beast cm from center of enclosure
-theta_o = .8*pi/2;   %%% Beast intial orientation (head direction)
+theta_o = .4*pi/2;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -24,7 +24,7 @@ y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
 
 
 %Coordinates of beast blobs in beast frame.
-[xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
+[xcoord, ycoord, BlobsPerLayer] = Discretize_Single_Shell_Disk(a,s);
 
 Nbeast = sum(BlobsPerLayer); %%% Number of blobs in the beast
 NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
@@ -58,6 +58,7 @@ y_head = ycoord(end - NRim + 1);
     = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale);
 
 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
+NEnc = length(y_Enc);
 
 toc
 

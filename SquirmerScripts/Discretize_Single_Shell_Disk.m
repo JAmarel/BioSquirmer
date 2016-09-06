@@ -6,7 +6,7 @@ NR = 1;
 
 BlobsPerLayer = zeros([1, NR]);
 
-BlobsPerLayer(1) = floor(2*pi*a/s); %%% one blob in the center of the circle
+BlobsPerLayer(1) = 200; 
 
 
 Nblobs = sum(BlobsPerLayer);
@@ -17,7 +17,7 @@ ycoord = zeros([1, Nblobs]);
 
 for j=1:BlobsPerLayer(1)
     delta_phi = 2*pi/BlobsPerLayer(1);
-    xcoord(j) = (j-1) * s * cos((j-1) * delta_phi); 
-    ycoord(j) = (j-1) * s * sin((j-1) * delta_phi);
+    xcoord(j) = a * cos((j-1) * delta_phi); 
+    ycoord(j) = a * sin((j-1) * delta_phi);
 end
 end
