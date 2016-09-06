@@ -1,21 +1,21 @@
  tic
 
-%Simulation
-T = 100;
-dt = 1;
+%Simulation %These scale with a
+T = .006;
+dt = .0001;
 
 %Discretization
-a = 1;              %%% radius of the disk nondimensionalized by the Saffman length
+a = .0001;              %%% radius of the disk nondimensionalized by the Saffman length
 s = 0.1 * a;          %%% radial spacing between neighboring blobs
-epsilon = s/8;        %%% radius of blobs
+epsilon = s/12;        %%% radius of blobs
 Scale = 10/a;
 
 %Enclosure
-R = 10*a;    %%% Radius of enclosure
+R = 25*a;    %%% Radius of enclosure
 
 %Initial Conditions
-r_o = .35*R;         %%% Radial coordinate of beast cm from center of enclosure
-phi_o = -pi/4;       %%% Angle coordinate of beast cm from center of enclosure
+r_o = .5*R;         %%% Radial coordinate of beast cm from center of enclosure
+phi_o = pi -.3*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
 theta_o = .4*pi/2;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
