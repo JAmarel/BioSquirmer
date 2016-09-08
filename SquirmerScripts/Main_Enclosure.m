@@ -1,13 +1,13 @@
  tic
 
 %These scale with a
-Steps = 10;
+Steps = 40;
 Increment = .5;
 
-a_array = [1e-3 1e-2 1 10];
-R_array = [5 10 25];
-B2_array = [-5 -1 0 1 5];
-B1_array = [1 0];
+a_array = [1]; %[1e-3 1e-2 1 10];
+R_array = [10]; %[5 10 25];
+B2_array = [-10]; %[-5 -1 0 1 5];
+B1_array = [1]; %[1 0];
 
 FinishedLoopCount = 0;
 
@@ -34,9 +34,9 @@ for i = 1:length(a_array)
                 dt = Increment*a;  
 
                 %Initial Conditions
-                r_o = .4*R;         %%% Radial coordinate of beast cm from center of enclosure
-                phi_o = -.6*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
-                theta_o = pi/4;   %%% Beast intial orientation (head direction)
+                r_o = .3*R;         %%% Radial coordinate of beast cm from center of enclosure
+                phi_o = -.1*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
+                theta_o = pi/2;   %%% Beast intial orientation (head direction)
 
                 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
                 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position

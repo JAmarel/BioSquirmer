@@ -58,6 +58,7 @@ time_history(1,:) = 0;
 for i = 1:Steps
     [fx, fy, Ux, Uy, W, ~, ~] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale);
+
   
 %%% Scaling timesteps based on distance from enclosure
     r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);
@@ -74,17 +75,30 @@ for i = 1:Steps
     
     PercentCompleted = 100*i/Steps
     
+    
     %%% If velocity unexpectedly rises, make the next dt smaller
     %%% history arrays are saved at i+1, so index i corresponds to the
     %%% previous timestep.
-       if i>2 && sqrt(Ux^2 + Uy^2) > 3*sqrt(Ux_history(i)^2 + Uy_history(i)^2)
+%        if i>2 && sqrt(Ux^2 + Uy^2) > 3*sqrt(Ux_history(i)^2 + Uy_history(i)^2)
 %            Ux = Ux_history(i);
 %            Uy = Uy_history(i);
 %            W = W_history(i);
 %            dt = dt_history(i)/10;
-             ratio = sqrt(Ux_history(i)^2 + Uy_history(i)^2) / sqrt(Ux^2 + Uy^2);
-             dt = ratio*dt;
-       end
+%              ratio = sqrt(Ux_history(i)^2 + Uy_history(i)^2) / sqrt(Ux^2 + Uy^2);
+%              dt = ratio*dt;
+%        end
+
+            
+% Radial Velocity
+V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
+%If I would increment over the edge, change dt so that it is only possible
+%to travel 1/4 of the distance remaining from the edge.
+        if r_cm_history(i)+ a + V_r*dt_o > R
+            dt = (1/(4*V_r))*(R - r_cm_history(i) - a);
+        else
+            dt = dt_o;
+        end
+        
             dt_history(i+1) = dt;
             time_history(i+1) = dt + sum(time_history(i));
 
