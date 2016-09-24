@@ -1,8 +1,10 @@
-%% Single squirmer with rotation
+%% Computes swimming velocity for a single unbounded squirmer with rotation/torque
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
+B1 = 1;
+B2 = 0;
 
 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
@@ -11,21 +13,13 @@ Nblobs = sum(BlobsPerLayer); %%% total number of blobs
 NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
-[VxRim, VyRim, B1] = PrescribeWave(NRim);
+[VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
 
-%Is this a better way to nondimensionalize?
+%Nondimensionalize
 VxRim = VxRim/(B1/2);
 VyRim = VyRim/(B1/2);
 
 [fx, fy, Ux, Uy,W, Matrix] = solve_U_disk_rot(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
-
-% fx = fx/(B1/2); %Nondimensionalizing.
-% fy = fy/(B1/2);
-% Ux = Ux/(B1/2); %Now U,W, and V have no dimensions.
-% Uy = Uy/(B1/2); %f carries dimensions [1/4pi eta]
-%                 %those units cancel in efficiency calculation.
-% W = W/(B1/2); Not sure if that is a valid way to nondimensionalize W
-
 
 
 FxRim = fx(end-NRim+1:end);

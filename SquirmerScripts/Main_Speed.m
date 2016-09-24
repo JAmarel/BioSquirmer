@@ -1,6 +1,8 @@
-%%Calculates/plots the speed for various beast radii without rotation
+%%Calculates/plots the speed for various nondimensional beast radii. Unbounded
 n = 10;
 Radii = logspace(-1.5,3.5,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
+B1 = 1;
+B2 = 0;
 
 Speeds = zeros([1, n]);
 
@@ -15,14 +17,15 @@ for i=1:n
     NR = length(BlobsPerLayer); %%% Number of radial layers
     NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
     
-    [VxRim, VyRim, B1] = PrescribeWave(NRim);
+    [VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
+    
+    %Nondimensionalize
+    VxRim = VxRim/(B1/2);
+    VyRim = VyRim/(B1/2);
     
     
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
-    
-    %Nondimensionalizing.
-    Ux = Ux/(B1/2);
-    Uy = Uy/(B1/2);
+    %Use solve_U_disk_rot to allow rotational freedom.
 
 
     speed = sqrt(Ux^2 + Uy^2);

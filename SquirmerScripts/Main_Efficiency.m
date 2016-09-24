@@ -1,9 +1,12 @@
-%%Calculates/plots the efficiency for various beast radii
-n = 5;
+%%Calculates/plots the swimming efficiency for various beast radii
+n = 15;
 Radii = logspace(-8,8,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
 Efficiencies = zeros([1, n]);
 ShellNumber = zeros([1, n]);
+
+B1 = 1;
+B2 = 0;
 
 for i=1:n
     a = Radii(i);
@@ -16,18 +19,14 @@ for i=1:n
     NR = length(BlobsPerLayer); %%% Number of radial layers
     NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
     
-    [VxRim, VyRim, B1] = PrescribeWave(NRim);
+    [VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
     
+    %Nondimensionalize
+    VxRim = VxRim/(B1/2);
+    VyRim = VyRim/(B1/2);
     
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
     
-    fx = fx/(B1/2); %Nondimensionalizing.
-    fy = fy/(B1/2);
-    Ux = Ux/(B1/2); %Now U and V have no dimensions.
-    Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
-                    %those units cancel in efficiency calculation.
-    VxRim = VxRim/(B1/2);
-    VyRim = VyRim/(B1/2);
 
     FxRim = fx(end-NRim+1:end);
     FyRim = fy(end-NRim+1:end);

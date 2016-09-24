@@ -1,5 +1,8 @@
 %Looking for swimming efficiency dependence on number of rim blobs/packing density
 
+%DiscretizeDisk_Pack needs slight changes for this script to function
+%again.
+
 n = 5;
 
 a = 10;
@@ -23,15 +26,13 @@ for i=1:n
     
     [VxRim, VyRim, B1] = PrescribeWave(NRim);
     
+    %Nondimen
+    VxRim = VxRim/(B1/2);
+    VyRim = VyRim/(B1/2);
     
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
     
-    fx = fx/(B1/2); %Nondimensionalizing.
-    fy = fy/(B1/2);
-    Ux = Ux/(B1/2);
-    Uy = Uy/(B1/2);
-    VxRim = VxRim/(B1/2);
-    VyRim = VyRim/(B1/2);
+
 
     FxRim = fx(end-NRim+1:end);
     FyRim = fy(end-NRim+1:end);

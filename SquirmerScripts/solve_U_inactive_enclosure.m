@@ -1,8 +1,7 @@
 function [Ux, Uy] = ...
-    solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, theta)
+    solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, theta,a)
 
-%%% This function computes the beast swimming velocity (Ux and Uy) as predicted by the
-%%%  reciprocal theorum.
+%%% Computes the beast swimming velocity as predicted by the Lorentz reciprocal theorum.
 %%% Ux_hat and Uy_hat are the prescribed velocity components of the inactive conjugate swimmer. 
 
 U_hat = 1; % This can be any number, choose 1.
@@ -128,6 +127,10 @@ Matrix = [M11 M12; ...
  
  fx_hat_rim = fx_hat(end-NRim+1:end);
  fy_hat_rim = fy_hat(end-NRim+1:end);
+ 
+ 
+ % There is some confusion here on whether to use Fx_hat or F_hat_x as
+ % calculated below.
  
  %These are wrong?
  Fx_hat = sum(fx_hat);

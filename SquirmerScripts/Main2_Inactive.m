@@ -1,10 +1,14 @@
 % First inactive attempt. Zero prescribed wave velocity and nonzero
 % prescribed body force. Choose an F and solve for U. This approach
-% is dropped in favor of Pick a U and solve for F.
+% is dropped in favor of Pick a U and solve for F. (Results seem to be the
+% same)
 
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
+
+B1 = 1;
+B2 = 0;
 
 %Net body forces on beast
 FxBeast = 8; 
@@ -17,7 +21,7 @@ Nblobs = sum(BlobsPerLayer); %%% total number of blobs
 NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
-[VxRim, VyRim, B1] = PrescribeWave(NRim);
+[VxRim, VyRim] = PrescribeWave(NRim, B1 , B2);
 
 %Is this the best way to nondimensionalize?
 VxRim = VxRim/(B1/2);

@@ -1,4 +1,6 @@
- tic
+% Plots the trajectory for a boundary element squirmer in an enclosed domain 
+
+tic
 
 %These scale with a
 Steps = 40;

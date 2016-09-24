@@ -1,10 +1,15 @@
 %Looking for swimming speed dependence on number of rim blobs/packing density
 
+%DiscretizeDisk_Pack needs slight changes for this script to function
+%again.
+
 n = 20;
 
 a = 10;
 s = 0.08 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
+B1 = 1;
+B2 = 0;
 
 CircumSpacing = linspace(s/(3),1.2*s,n); %slight overlap if d < e/2
 
@@ -22,17 +27,14 @@ for i=1:n
     NR = length(BlobsPerLayer); %%% Number of radial layers
     NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
     
-    [VxRim, VyRim, B1] = PrescribeWave(NRim);
+    [VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
     
+    %Nondimensionalize
+    VxRim = VxRim/(B1/2);
+    VyRim = VyRim/(B1/2);
     
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
     
-    fx = fx/(B1/2); %Nondimensionalizing.
-    fy = fy/(B1/2);
-    Ux = Ux/(B1/2);
-    Uy = Uy/(B1/2);
-    VxRim = VxRim/(B1/2);
-    VyRim = VyRim/(B1/2);
 
     FxRim = fx(end-NRim+1:end);
     FyRim = fy(end-NRim+1:end);

@@ -1,8 +1,11 @@
-%% Investigate Orientation effects on velocity
+%% Unbounded single squirmer can now be oriented to face any direction.
 tic
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
 s= 0.1 * a;          %%% spacing between neighboring blobs
 epsilon = s/8;       %%% radius of the blob
+
+B1 = 1;
+B2 = 0;
 
 theta_o = 3*pi/2; %%%Initial blob orientation.
 
@@ -18,7 +21,11 @@ Nblobs = sum(BlobsPerLayer); %%% total number of blobs
 NR = length(BlobsPerLayer); %%% Number of radial layers
 NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
-[VxRim, VyRim, B1] = PrescribeWave(NRim);
+[VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
+
+%Nondimensionalize
+VxRim = VxRim/(B1/2);
+VyRim = VyRim/(B1/2);
 
 %Now Rotate velocities according to theta_o into lab frame.
 VxRimNew = VxRim*cos(theta_o) - VyRim*sin(theta_o);
@@ -28,14 +35,6 @@ VyRim = VyRimNew;
 
 %%
 [fx, fy, Ux, Uy, Matrix] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim);
-
-fx = fx/(B1/2); %Nondimensionalizing.
-fy = fy/(B1/2);
-Ux = Ux/(B1/2); %Now U,W, and V have no dimensions.
-Uy = Uy/(B1/2); %f carries dimensions [1/4pieta]
-                %those units cancel in efficiency calculation.
-VxRim = VxRim/(B1/2);
-VyRim = VyRim/(B1/2);
 
 FxRim = fx(end-NRim+1:end);
 FyRim = fy(end-NRim+1:end);

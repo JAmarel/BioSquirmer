@@ -1,10 +1,14 @@
-% Second inactive attempt. Pick a U and solve for F by summing the little f's.
+% Computes and compares the swimming speed vs radius from the boundary element approach and the numerical reciprocal theorem.
+
 % Active and Inactive disks must have velocity in the same direction (x)
 
 % 1 
 tic
-n = 30; %Radius sampling
+n = 5; %Radius sampling
 Radii = logspace(-1.5,3,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
+
+B1 = 1;
+B2 = 0;
 
 m = 1; %Spacing sampling
 
@@ -41,7 +45,7 @@ for i=1:n
         NR = length(BlobsPerLayer); %%% Number of radial layers
         NRim = BlobsPerLayer(end);  %%% number of blobs in the outermost layer
 
-        [VxRim, VyRim, B1] = PrescribeWave(NRim);
+        [VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
         
         [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
 

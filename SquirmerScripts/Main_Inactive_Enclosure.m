@@ -1,4 +1,9 @@
+% Computes the beast swimming velocity as predicted by the Lorentz reciprocal theorum.
+
 tic
+
+B1 = 1;
+B2 = 0;
 
 %Discretization
 a = 10;              %%% radius of the disk nondimensionalized by the Saffman length
@@ -27,7 +32,7 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
 
 %Prescribe wave in the beast frame.
-[VxRim, VyRim, B1, B2] = PrescribeWave(NRim);
+[VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
 
 %Now Rotate velocities according to theta_o into lab frame.
 [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
@@ -44,7 +49,7 @@ VyRim = VyRim/(B1/2);
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
 
-[Ux, Uy] = solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim,theta_o);
+[Ux, Uy] = solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim,theta_o,a);
 
 toc
 
