@@ -1,3 +1,6 @@
+These figures were created with incorrect code. (Noted 9/24/16)
+
+
 1. Main_Enclosure 7/20/16. 
 
 B1 = 0.1;            %%% tangential velocity strength (streaming)
@@ -32,6 +35,8 @@ B2 = 1;
 
 T = 200;
 dt = .25;
+
+
 
 
 %Discretization
