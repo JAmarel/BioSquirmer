@@ -3,12 +3,12 @@
 tic
 
 %These scale with a
-Steps = 40;
-Increment = .5;
+Steps = 100;
+Increment = .1;
 
-a_array = [1]; %[1e-3 1e-2 1 10];
-R_array = [10]; %[5 10 25];
-B2_array = [-10]; %[-5 -1 0 1 5];
+a_array = [.0001]; %[1e-3 1e-2 1 10];
+R_array = [10]; %[5 10 25]; This is actually R/a
+B2_array = [2]; %[-5 -1 0 1 5];
 B1_array = [1]; %[1 0];
 
 FinishedLoopCount = 0;
@@ -36,9 +36,9 @@ for i = 1:length(a_array)
                 dt = Increment*a;  
 
                 %Initial Conditions
-                r_o = .3*R;         %%% Radial coordinate of beast cm from center of enclosure
-                phi_o = -.1*pi/2;       %%% Angle coordinate of beast cm from center of enclosure
-                theta_o = pi/2;   %%% Beast intial orientation (head direction)
+                r_o = .7*R;         %%% Radial coordinate of beast cm from center of enclosure
+                phi_o = pi/4;       %%% Angle coordinate of beast cm from center of enclosure
+                theta_o = 1.1*pi/2;   %%% Beast intial orientation (head direction)
 
                 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
                 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -59,19 +59,29 @@ for i = 1:length(a_array)
 
                 %Now Rotate velocities according to theta_o into lab frame.
                 [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
+                
+                % Change for comparing with Dr. K
+                [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta_o);
+                %End Change
 
-                %Nondimensionalize from the start?
-                if B1 == 0
-                    VxRim = VxRim/(B2/2);
-                    VyRim = VyRim/(B2/2);
-                else
-                    VxRim = VxRim/(B1/2);
-                    VyRim = VyRim/(B1/2);
-                end
+                %Nondimensionalize from the start? Commented out to compare
+%                 if B1 == 0
+%                     VxRim = VxRim/(B2/2);
+%                     VyRim = VyRim/(B2/2);
+%                 else
+%                     VxRim = VxRim/(B1/2);
+%                     VyRim = VyRim/(B1/2);
+%                 end
 
                 %Enclosure Blob Coordinates.
                 %Enclosure is a ring centered about the lab origin.
-                [x_Enc, y_Enc] = DiscretizeEnclosure(R,s); 
+                [x_Enc, y_Enc] = DiscretizeEnclosure(R,s);
+                
+                %For comparing with Dr. Kuriabova
+                Nencl = 500;
+                x_Enc = R * cos(linspace(0, 2*pi, Nencl));
+                y_Enc = R * sin(linspace(0, 2*pi, Nencl));
+                %End Compare changes
 
                 %Translate beast geometric center to the chosen initial position in enclosure frame.
                 xcoord = xcoord + x_o;
@@ -81,8 +91,8 @@ for i = 1:length(a_array)
                 x_head = xcoord(end - NRim + 1);
                 y_head = ycoord(end - NRim + 1);
 
-                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history]...
-                    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale);
+                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history]...
+                    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale, B1, B2);
 
                 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
                 NEnc = length(y_Enc);
@@ -140,51 +150,51 @@ for i = 1:length(a_array)
                 title1 = ['trajectory' num2str(i) num2str(j) num2str(k) num2str(m)];
                 saveas(gcf,title1, 'png')
                 %% Plotting velocity vs separation
-                fig = figure(2);
-                ax1 = axes('Position',[0 0 1 1],'Visible','off');
-                ax2 = axes('Position',[.3 .1 .6 .8]);
-                axes(ax1);
-                text(.025,0.6,descr);
-                %back to plotting data
-                axes(ax2);
-                hold on
-                scatter(separation_history(2:end-1), speed_history(2:end-1));
-                title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
-                xlabel('Nondimensional Separation Distance (a/l_s)')
-                ylabel('Nondimensional Swimming Speed')
-                hold off
-                title2 = ['speed' num2str(i) num2str(j) num2str(k) num2str(m)];
-                saveas(gcf,title2, 'png')
+%                 fig = figure(2);
+%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+%                 ax2 = axes('Position',[.3 .1 .6 .8]);
+%                 axes(ax1);
+%                 text(.025,0.6,descr);
+%                 %back to plotting data
+%                 axes(ax2);
+%                 hold on
+%                 scatter(separation_history(2:end-1), speed_history(2:end-1));
+%                 title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
+%                 xlabel('Nondimensional Separation Distance (a/l_s)')
+%                 ylabel('Nondimensional Swimming Speed')
+%                 hold off
+%                 title2 = ['speed' num2str(i) num2str(j) num2str(k) num2str(m)];
+%                 saveas(gcf,title2, 'png')
                 %% Plotting angular velocity vs separation
-                fig = figure(3);
-                ax1 = axes('Position',[0 0 1 1],'Visible','off');
-                ax2 = axes('Position',[.3 .1 .6 .8]);
-                axes(ax1);
-                text(.025,0.6,descr);
-                %back to plotting data
-                axes(ax2);
-                hold on
-                scatter(separation_history(2:end-1), W_history(2:end-1));
-                title('Angular velocity vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
-                xlabel('Nondimensional Separation Distance (a/l_s)')
-                ylabel('Nondimensional Angular Velocity')
-                hold off
-                title3 = ['angular' num2str(i) num2str(j) num2str(k) num2str(m)];
-                saveas(gcf,title3, 'png')
+%                 fig = figure(3);
+%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+%                 ax2 = axes('Position',[.3 .1 .6 .8]);
+%                 axes(ax1);
+%                 text(.025,0.6,descr);
+%                 %back to plotting data
+%                 axes(ax2);
+%                 hold on
+%                 scatter(separation_history(2:end-1), W_history(2:end-1));
+%                 title('Angular velocity vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
+%                 xlabel('Nondimensional Separation Distance (a/l_s)')
+%                 ylabel('Nondimensional Angular Velocity')
+%                 hold off
+%                 title3 = ['angular' num2str(i) num2str(j) num2str(k) num2str(m)];
+%                 saveas(gcf,title3, 'png')
                 %% Plotting separation vs simulation time
-                fig = figure(4);
-                ax1 = axes('Position',[0 0 1 1],'Visible','off');
-                ax2 = axes('Position',[.3 .1 .6 .8]);
-                axes(ax1);
-                text(.025,0.6,descr);
-                %back to plotting data
-                axes(ax2);
-                scatter(time_history(2:end-1), separation_history(2:end-1));
-                title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
-                xlabel('Nondimensional Time')
-                ylabel('Nondimensional Separation')
-                title4 = ['separation' num2str(i) num2str(j) num2str(k) num2str(m)];
-                saveas(gcf,title4, 'png')
+%                 fig = figure(4);
+%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+%                 ax2 = axes('Position',[.3 .1 .6 .8]);
+%                 axes(ax1);
+%                 text(.025,0.6,descr);
+%                 %back to plotting data
+%                 axes(ax2);
+%                 scatter(time_history(2:end-1), separation_history(2:end-1));
+%                 title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
+%                 xlabel('Nondimensional Time')
+%                 ylabel('Nondimensional Separation')
+%                 title4 = ['separation' num2str(i) num2str(j) num2str(k) num2str(m)];
+%                 saveas(gcf,title4, 'png')
             end
         end
     end
