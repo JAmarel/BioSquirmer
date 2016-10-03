@@ -1,4 +1,4 @@
-function [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history]...
+function [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history,Matrix_history]...
     = TimeAdvance(T, dt_o, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale, B1, B2)
 %Calls Solve_U at each increment to simulate time.
 
@@ -24,8 +24,8 @@ fy_history = zeros([Steps+1,length([xcoord x_Enc])]);
 
 
 %%% Change to compare with Dr. K
-fx_history = zeros([Steps+1,length([xcoord])]);
-fy_history = zeros([Steps+1,length([xcoord])]);
+% fx_history = zeros([Steps+1,length([xcoord])]);
+% fy_history = zeros([Steps+1,length([xcoord])]);
 %%% End Change
 
 
@@ -65,26 +65,35 @@ time_history(1,:) = 0;
 
 
 for i = 1:Steps
-    %[fx, fy, Ux, Uy, W, ~, ~] = ...
-    %solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale);
+    
+    %%% Comment to compare
+    [fx, fy, Ux, Uy, W, Matrix, ~] = ...
+    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale);
+    %%% End
+    
+
 
 
 %%% For comparing with Dr. Kuriabova.
-Nbeast = length(xcoord);
-VXbeast = [zeros([Nbeast-NRim, 1]); VxRim];
-VYbeast = [zeros([Nbeast-NRim, 1]); VyRim];
-x0 = xcoord(1);
-y0 = ycoord(1);
-xbeast = xcoord;
-ybeast = ycoord;
-xencl = x_Enc;
-yencl = y_Enc;
+%%% Be sure to toggle the definitions for fx and fy found near the top.
+% Nbeast = length(xcoord);
+% VXbeast = [zeros([Nbeast-NRim, 1]); VxRim];
+% VYbeast = [zeros([Nbeast-NRim, 1]); VyRim];
+% x0 = xcoord(1);
+% y0 = ycoord(1);
+% xbeast = xcoord;
+% ybeast = ycoord;
+% xencl = x_Enc;
+% yencl = y_Enc;
+% 
+% [fx_beast, fy_beast, fx_encl, fy_encl, Ux, Uy, Omega, Matrix] = ...
+%     solve_levineslets_beast_encl(x0, y0, xbeast, ybeast, xencl, yencl, epsilon, VXbeast, VYbeast);
+% fx = fx_beast;
+% fy = fy_beast;
+% W = Omega;
+%%% End Change
 
-[fx_beast, fy_beast, fx_encl, fy_encl, Ux, Uy, Omega] = ...
-    solve_levineslets_beast_encl(x0, y0, xbeast, ybeast, xencl, yencl, epsilon, VXbeast, VYbeast);
-fx = fx_beast;
-fy = fy_beast;
-W = Omega;
+Matrix_history{i} = Matrix;
 
   
 %%% Scaling timesteps based on distance from enclosure
@@ -132,12 +141,11 @@ V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
             %%%Beast rotation
             theta = theta_history(i) + W*dt;
 
-            %Prescribe wave again account for W*dt.
-            [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, W*dt);
+
               
-            % Change for comparing with Dr. K
+
             [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta);
-            %End Change
+
 
             %Shift to beast frame
             %Translate origin at beast center

@@ -3,8 +3,8 @@
 tic
 
 %These scale with a
-Steps = 100;
-Increment = .1;
+Steps = 1;
+Increment = 1;
 
 a_array = [.0001]; %[1e-3 1e-2 1 10];
 R_array = [10]; %[5 10 25]; This is actually R/a
@@ -37,8 +37,8 @@ for i = 1:length(a_array)
 
                 %Initial Conditions
                 r_o = .7*R;         %%% Radial coordinate of beast cm from center of enclosure
-                phi_o = pi/4;       %%% Angle coordinate of beast cm from center of enclosure
-                theta_o = 1.1*pi/2;   %%% Beast intial orientation (head direction)
+                phi_o = .3*pi/4;       %%% Angle coordinate of beast cm from center of enclosure
+                theta_o = .3*pi/4;   %%% Beast intial orientation (head direction)
 
                 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
                 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -55,33 +55,20 @@ for i = 1:length(a_array)
                 [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
 
                 %Prescribe wave in the beast frame.
-                [VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
-
-                %Now Rotate velocities according to theta_o into lab frame.
-                [VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
-                
-                % Change for comparing with Dr. K
+                %And Rotate velocities according to theta_o into lab frame.
                 [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta_o);
-                %End Change
-
-                %Nondimensionalize from the start? Commented out to compare
-%                 if B1 == 0
-%                     VxRim = VxRim/(B2/2);
-%                     VyRim = VyRim/(B2/2);
-%                 else
-%                     VxRim = VxRim/(B1/2);
-%                     VyRim = VyRim/(B1/2);
-%                 end
 
                 %Enclosure Blob Coordinates.
                 %Enclosure is a ring centered about the lab origin.
-                [x_Enc, y_Enc] = DiscretizeEnclosure(R,s);
                 
-                %For comparing with Dr. Kuriabova
-                Nencl = 500;
-                x_Enc = R * cos(linspace(0, 2*pi, Nencl));
-                y_Enc = R * sin(linspace(0, 2*pi, Nencl));
-                %End Compare changes
+                % Uncomment to quit comparing
+                [x_Enc, y_Enc] = DiscretizeEnclosure(R,s);
+                %
+                
+                %Alternate enclosure discretization
+%                 Nencl = 500;
+%                 x_Enc = R * cos(linspace(0, 2*pi, Nencl));
+%                 y_Enc = R * sin(linspace(0, 2*pi, Nencl));
 
                 %Translate beast geometric center to the chosen initial position in enclosure frame.
                 xcoord = xcoord + x_o;
@@ -91,7 +78,7 @@ for i = 1:length(a_array)
                 x_head = xcoord(end - NRim + 1);
                 y_head = ycoord(end - NRim + 1);
 
-                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history]...
+                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history, Matrix_history]...
                     = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale, B1, B2);
 
                 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);

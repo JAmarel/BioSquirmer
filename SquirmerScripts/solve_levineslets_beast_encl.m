@@ -1,4 +1,4 @@
-function [fx_beast, fy_beast, fx_encl, fy_encl, Ux, Uy, Omega] = ...
+function [fx_beast, fy_beast, fx_encl, fy_encl, Ux, Uy, Omega, Matrix] = ...
     solve_levineslets_beast_encl(x0, y0, xbeast, ybeast, xencl, yencl, epsilon, VXbeast, VYbeast)
 
 
@@ -144,7 +144,7 @@ M21 = zeros([Nbeast, Nbeast]);  %%% y-component of the vector filed due to x-lev
                             chihat11_x(i,j)^2 * alpha_perp11(i, j);                                     
              
           else
-                M22(i, j) = alpha_perp11(i, j);
+                M22(i, j) = alpha_par11(i, j);
           end
       end
  end
@@ -187,7 +187,7 @@ A21 = zeros([Nencl, Nencl]);  %%% y-component of the vector filed due to x-levin
                             chihat22_x(i,j)^2 * alpha_perp22(i, j);                                   
              
           else
-                A22(i, j) = alpha_perp22(i, j);
+                A22(i, j) = alpha_par22(i, j);
           end
       end
  end
@@ -237,13 +237,13 @@ A21 = zeros([Nencl, Nencl]);  %%% y-component of the vector filed due to x-levin
  
  %%% Now we need to form one big matrix of the system of equations
  
- Matrix = [M11 M12 K11 K12 (-1)*ones([Nbeast,1])  zeros([Nbeast,1]) (-1)*(ybeast - y0); ...
-           M21 M22 K21 K22  zeros([Nbeast, 1]) (-1)*ones([Nbeast,1]) (xbeast - x0)     ; ...
+ Matrix = [M11 M12 K11 K12 (-1)*ones([Nbeast,1])  zeros([Nbeast,1]) (ybeast - y0); ...
+           M21 M22 K21 K22  zeros([Nbeast, 1]) (-1)*ones([Nbeast,1]) -(xbeast - x0)     ; ...
            B11 B12 A11 A12  zeros([Nencl,1])  zeros([Nencl,1]) zeros([Nencl,1]) ; ...
            B21 B22 A21 A22  zeros([Nencl,1])  zeros([Nencl,1]) zeros([Nencl,1]) ; ...                               
            ones([1, Nbeast]) zeros([1, Nbeast]) zeros([1,2*Nencl]) 0 0 0; ...               
            zeros([1, Nbeast])  ones([1, Nbeast])  zeros([1,2*Nencl])   0  0  0;...
-            (-1)*(ybeast' - y0)  (xbeast' - x0) zeros([1,2*Nencl]) 0  0  0]; 
+            (ybeast' - y0)  -(xbeast' - x0) zeros([1,2*Nencl]) 0  0  0]; 
         
   c_coefs = [VXbeast; VYbeast; zeros([2*Nencl, 1]); 0; 0; 0];       
  
