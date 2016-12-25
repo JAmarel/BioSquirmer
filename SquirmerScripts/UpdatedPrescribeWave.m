@@ -1,6 +1,6 @@
 function [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta_o)
-%Prescribes single squirmer wave
-%   Detailed explanation goes here
+%Prescribes single squirmer wave when the beast head is facing theta_o
+%according to the enclosure frame.
 
 
 VxRim     = zeros([NRim, 1]);     %%% x-component of tangential velocity at the rim

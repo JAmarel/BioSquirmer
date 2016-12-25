@@ -3,8 +3,8 @@ function [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_h
 %Calls Solve_U at each increment to simulate time.
 
 % T = Total simulation time
-% dt = Time step increment
-% xcoord, ycoord = Initial beast (blob) coordinates in lab frame
+% dt_o = Time step increment
+% xcoord, ycoord = Initial beast (blob) coordinates in enc frame
 % x_Enc, y_Enc = Enclosure coodinates in lab frame
 % theta_o = Initial beast orientation
 
@@ -33,7 +33,7 @@ x_cm_history = zeros([Steps+1,1]);
 y_cm_history = zeros([Steps+1,1]);
 
 r_cm_history = zeros([Steps+1,1]);
-separation_history = zeros([Steps+1,1]); %Distance between enclosure and the closest blob
+separation_history = zeros([Steps+1,1]); %Distance between enclosure and the closest beast blob
 
 Ux_history = zeros([Steps+1,1]);
 Uy_history = zeros([Steps+1,1]);
@@ -41,10 +41,10 @@ Uy_history = zeros([Steps+1,1]);
 W_history = zeros([Steps+1,1]);
 theta_history = zeros([Steps+1,1]);
 
-% Previously, needed to calculate the condition number at each step
+% For calculating the condition number at each step. Comp Intensive.
 % COND_history = zeros([Steps,1]);
 
-%Initial Positions
+%Beast Initial Positions
 x_history(1,:) = xcoord;
 y_history(1,:) = ycoord;
 
@@ -66,6 +66,8 @@ time_history(1,:) = 0;
 
 for i = 1:Steps
     
+    
+    %%% Solve for point forces, swimming velocity, angular rotation
     %%% Comment to compare
     [fx, fy, Ux, Uy, W, Matrix, ~] = ...
     solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale);
@@ -74,7 +76,7 @@ for i = 1:Steps
 
 
 
-%%% For comparing with Dr. Kuriabova.
+%%% For comparing with Dr. K's solver. These matched 10/16.
 %%% Be sure to toggle the definitions for fx and fy found near the top.
 % Nbeast = length(xcoord);
 % VXbeast = [zeros([Nbeast-NRim, 1]); VxRim];
@@ -96,9 +98,10 @@ for i = 1:Steps
 Matrix_history{i} = Matrix;
 
   
-%%% Scaling timesteps based on distance from enclosure
-    r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2);
-    separation_history(i) = R - (r_cm_history(i) + a);
+%%% Scaling timesteps based on distance from enclosure.
+%%% Smaller steps when near the edge
+    r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2); %Beast CM
+    separation_history(i) = R - (r_cm_history(i) + a); %+a to get the blob nearest the edge
     if separation_history(i) < .5*a
         dt = dt_o/100;
     elseif separation_history(i) < 1.5*a
@@ -112,7 +115,8 @@ Matrix_history{i} = Matrix;
     PercentCompleted = 100*i/Steps
     
     
-    %%% If velocity unexpectedly rises, make the next dt smaller
+    %%% If velocity unexpectedly rises, go back to the previous step and
+    %%% walk slightly further
     %%% history arrays are saved at i+1, so index i corresponds to the
     %%% previous timestep.
 %        if i>2 && sqrt(Ux^2 + Uy^2) > 3*sqrt(Ux_history(i)^2 + Uy_history(i)^2)
@@ -120,21 +124,20 @@ Matrix_history{i} = Matrix;
 %            Uy = Uy_history(i);
 %            W = W_history(i);
 %            dt = dt_history(i)/10;
-%              ratio = sqrt(Ux_history(i)^2 + Uy_history(i)^2) / sqrt(Ux^2 + Uy^2);
-%              dt = ratio*dt;
 %        end
 
             
 % Radial Velocity
 V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
-%If I would increment over the edge, change dt so that it is only possible
+%If beast would walk over the edge, change dt so that it is only possible
 %to travel 1/4 of the distance remaining from the edge.
         if r_cm_history(i)+ a + V_r*dt_o > R
             dt = (1/(4*V_r))*(R - r_cm_history(i) - a);
         else
-            dt = dt_o;
+            dt = dt;
         end
         
+            %For tracking timestep reduction
             dt_history(i+1) = dt;
             time_history(i+1) = dt + sum(time_history(i));
 
@@ -147,8 +150,7 @@ V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
             [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta);
 
 
-            %Shift to beast frame
-            %Translate origin at beast center
+            %Shift to beast frame (Translate origin to beast center)
             xcoord = xcoord - x_cm_history(i);
             ycoord = ycoord - y_cm_history(i);
 
@@ -163,7 +165,7 @@ V_r = (1/r_cm_history(i))*(Ux*x_cm_history(i) + Uy*y_cm_history(i));
             xcoord = xcoord + Ux*dt;
             ycoord = ycoord + Uy*dt;
 
-            %Fill in resulting (future) data
+            %Fill in resulting data
             x_history(i+1,:) = xcoord;
             y_history(i+1,:) = ycoord;
 
