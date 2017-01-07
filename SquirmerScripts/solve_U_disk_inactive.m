@@ -3,12 +3,8 @@ function [fx, fy] = ...
 %Inactive disk. Fnet !=0. Input Vrim = 0.
 %%% Now including rotation. M = 5x5
 
-%%% angle = an array that contains instantenous angular position of
-%%% point-like forces on the circumference
-%%% radius = an array that contain instantenous radial position of
-%%% point-like forces
-
-%%% We assign the vector field distribution on the boundary of the circle
+%%% Goal here is to solve for the point forces that are responsible
+%%% for the input values Ux and Uy
 
 
 N = length(xcoord);   %%% number of blobs in the disk
@@ -109,11 +105,12 @@ Matrix = [M11 M12 ;...
        
  %scondition = cond(Matrix);
  
+ %Inactive disk moves as a whole rigid object (all blobs same velocity)
+ 
  Ux = Ux * ones([N,1]);
  Uy = Uy * ones([N,1]);
 
  c_coefs = [Ux; Uy];
- % [Ux, Uy]
  
  
  variables = Matrix\c_coefs;
