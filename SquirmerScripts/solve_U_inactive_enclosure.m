@@ -110,7 +110,6 @@ M21 = zeros([N, N]);  %%% y-component of the vector field at point i due to x-le
  %%% Now we need to form one big matrix for the system of equations
  
 %format short
-% Explain how I changed the matrix here
 Matrix = [M11 M12; ...
           M21 M22];
        
@@ -132,13 +131,19 @@ Matrix = [M11 M12; ...
  % There is some confusion here on whether to use Fx_hat or F_hat_x as
  % calculated below.
  
- %These are wrong?
+ %Think this option is incorrect
  Fx_hat = sum(fx_hat);
  Fy_hat = sum(fy_hat);
  
- %Make these work somehow
+ %Need to implement this option
  F_hat_x = Ux_hat/HPW_mobility(a);
  F_hat_y = Uy_hat/HPW_mobility(a);
+ 
+ %How to correctly solve for Ux, Uy, and W after introducing the enclosure?
+ %Can I still split them up? as in Main_Inactive?
+ %Another system of equations?
+ 
+ % Now use the reciprocal theorem to determine the active swimming speed
  
  Ux = (-1/Fx_hat)*(sum(VxRim.*fx_hat_rim) + sum(VyRim.*fy_hat_rim));
  Uy = (-1/Fy_hat)*(sum(VxRim.*fx_hat_rim) + sum(VyRim.*fy_hat_rim));

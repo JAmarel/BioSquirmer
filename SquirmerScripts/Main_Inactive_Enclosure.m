@@ -1,4 +1,5 @@
-% Computes the beast swimming velocity as predicted by the Lorentz reciprocal theorum.
+% Computes the beast swimming velocity when confined to an enclosure as predicted by the Lorentz
+% reciprocal theorem at one instant in time
 
 tic
 
@@ -15,9 +16,9 @@ R = 5*a;    %%% Radius of enclosure
 d = 10*s;    %%% Circumferential Enclosure Blob Spacing
 
 %Initial Conditions
-r_o = 0*R;         %%% Radial coordinate of beast cm from center of enclosure
+r_o = 0.5*R;         %%% Radial coordinate of beast cm from center of enclosure
 phi_o = .8*pi;       %%% Angle coordinate of beast cm from center of enclosure
-theta_o = pi;   %%% Beast intial orientation (head direction)
+theta_o = pi/4;   %%% Beast intial orientation (head direction)
 
 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position
@@ -32,14 +33,7 @@ NRim = BlobsPerLayer(end);   %%% Number of blobs in the outermost beast layer
 [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
 
 %Prescribe wave in the beast frame.
-[VxRim, VyRim] = PrescribeWave(NRim, B1, B2);
-
-%Now Rotate velocities according to theta_o into lab frame.
-[VxRim, VyRim] = Rotate_Vector(VxRim, VyRim, theta_o);
-
-%Nondimensionalize from the start
-VxRim = VxRim/(B1/2);
-VyRim = VyRim/(B1/2);
+[VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2,theta_o);
 
 %Enclosure Blob Coordinates.
 %Enclosure is a ring centered about the lab origin.
@@ -49,6 +43,7 @@ VyRim = VyRim/(B1/2);
 xcoord = xcoord + x_o;
 ycoord = ycoord + y_o;
 
+%Is this solving as it should? More inside
 [Ux, Uy] = solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim,theta_o,a);
 
 toc

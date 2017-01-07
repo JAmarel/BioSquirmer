@@ -66,7 +66,8 @@ for i = 1:length(a_array) %Cycle through beast radii
                 %Enclosure is a ring centered about the origin.
                 
                 % Primary Enclosure Discretization
-                [x_Enc, y_Enc] = DiscretizeEnclosure(R,s);
+                d = s; %Enclosure blob spacing same as beast blob spacing
+                [x_Enc, y_Enc] = DiscretizeEnclosure(R,d);
                 %
                 
                 NEnc = length(y_Enc);

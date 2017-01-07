@@ -1,9 +1,9 @@
-function [xcoord, ycoord] = DiscretizeEnclosure(R,s)
+function [xcoord, ycoord] = DiscretizeEnclosure(R,d)
 %Returns the coordinates of each blob for a single layer enclosure.
 %   R is the radius of the enclosure
-%   d is the circumferential blob spacing
+%   s is the circumferential blob spacing
 
-Nblobs = round(2*pi*R/s,0); %Packs as many blobs in as possible according to R and d.
+Nblobs = round(2*pi*R/d,0); %Packs as many blobs in as possible according to R and s.
 
 
 xcoord = zeros([1, Nblobs]);

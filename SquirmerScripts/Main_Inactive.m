@@ -39,6 +39,9 @@ for i=1:n %Loop through non-dim radii
         Uy_hat = U_hat*sin(theta_o);
 
         [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s); %Initiate a beast at the origin
+        
+        %Rotate coordinates according to theta_o
+        [xcoord, ycoord] = Rotate_Vector(xcoord, ycoord, theta_o);
 
         Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
 
@@ -85,7 +88,8 @@ for i=1:n %Loop through non-dim radii
         
         %Uy_Recip = (-1/(FyNet_hat_2))*(sum(VxRim.*FxRim_hat_2) + sum(VyRim.*FyRim_hat_2));
         
-        % Third, solve for W from recip thm.
+        % Third, solve for W from recip thm. solve_U_disk_inactive needs to
+        % be updated to handle solving for W.
         %% Active
         % Solve for Ux as predicted by active swimmer code
         
