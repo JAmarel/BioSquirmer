@@ -1,5 +1,5 @@
 function [fx, fy] = ...
-    solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux, Uy)
+    solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux, Uy, W)
 %Inactive disk. Fnet !=0. Input Vrim = 0.
 %%% Now including rotation. M = 5x5
 
@@ -107,8 +107,17 @@ Matrix = [M11 M12 ;...
  
  %Inactive disk moves as a whole rigid object (all blobs same velocity)
  
+ %Translational Motion
  Ux = Ux * ones([N,1]);
  Uy = Uy * ones([N,1]);
+ 
+ %Rotational Component
+ Vx = -W.*ycoord;
+ Vy = W.*xcoord;
+ 
+ %Join together
+ Ux = Ux + Vx.';
+ Uy = Uy + Vy.';
 
  c_coefs = [Ux; Uy];
  

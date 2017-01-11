@@ -33,6 +33,7 @@ for i=1:n %Loop through non-dim radii
 
         %Velocity of inactive disk
         U_hat = 1;
+        W_hat = 1;
         
         
         Ux_hat = U_hat*cos(theta_o); 
@@ -63,7 +64,7 @@ for i=1:n %Loop through non-dim radii
         % Recip theorum allows us to solve for Ux, Uy, and W separately.
         
         % First, solve for Ux as predicted by recip thm
-        [fx_hat_1, fy_hat_1] = solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux_hat, 0);
+        [fx_hat_1, fy_hat_1] = solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux_hat, 0, 0);
 
         FxRim_hat_1 = fx_hat_1(end-NRim+1:end);
         FyRim_hat_1 = fy_hat_1(end-NRim+1:end);
@@ -76,7 +77,7 @@ for i=1:n %Loop through non-dim radii
         %Ux_Recip = (-1/(FxNet_hat_1))*(sum(VxRim.*FxRim_hat_1) + sum(VyRim.*FyRim_hat_1)); % This line is probably incorrect. (Gives perfect agreement though.)
         
         % Second, solve for Uy from recip thm
-        [fx_hat_2, fy_hat_2] = solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, 0, Uy_hat);
+        [fx_hat_2, fy_hat_2] = solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, 0, Uy_hat, 0);
         
         FxRim_hat_2 = fx_hat_2(end-NRim+1:end);
         FyRim_hat_2 = fy_hat_2(end-NRim+1:end);
@@ -90,6 +91,15 @@ for i=1:n %Loop through non-dim radii
         
         % Third, solve for W from recip thm. solve_U_disk_inactive needs to
         % be updated to handle solving for W.
+        
+        [fx_hat_3, fy_hat_3] = solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, 0, 0, W_hat);
+        
+        FxRim_hat_3 = fx_hat_3(end-NRim+1:end);
+        FyRim_hat_3 = fy_hat_3(end-NRim+1:end);
+        
+        Torque_hat = dot(xcoord,fy_hat_3.') - dot(ycoord,fx_hat_3.');
+        
+        W_Recip = (-1/(Torque_hat))*(sum(VxRim.*FxRim_hat_3) + sum(VyRim.*FyRim_hat_3));
         %% Active
         % Solve for Ux as predicted by active swimmer code
         
