@@ -1,6 +1,9 @@
 function [Ux, Uy] = ...
     solve_U_inactive_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, theta,a)
 
+
+% This is unused? Incomplete?
+
 %%% Computes the beast swimming velocity as predicted by the Lorentz reciprocal theorum.
 %%% Ux_hat and Uy_hat are the prescribed velocity components of the inactive conjugate swimmer. 
 

@@ -1,5 +1,5 @@
 %%Calculates/plots the swimming efficiency for various beast radii
-n = 15;
+n = 30; %Number of radii to sample
 Radii = logspace(-8,8,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 
 Efficiencies = zeros([1, n]);
@@ -65,9 +65,10 @@ end
 figure(2)
 semilogx(Radii, Efficiencies, 'o')
 title('Swimming Efficiency vs. Radius','FontSize',16,'FontWeight','bold')
-xlabel('Log Scale Nondimensional Radius (a/l_s)')
+xlabel('Nondimensional Beast Radius [a/l_s]')
 ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
-%saveas(gcf,'Efficiency 2.png')
+saveas(gcf,'EfficiencyvsRadius.png')
+saveas(gcf,'EfficiencyvsRadius.eps')
 
 % figure(3)
 % loglog(Radii, Efficiencies, 'o')
@@ -75,7 +76,6 @@ ylabel('Efficiency (P_d_r_a_g/P_s_w_i_m)')
 % xlabel('Log Scale Nondimensional Radius (a/l_s)')
 % ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
 % saveas(gcf,'Efficiency 3.png')
-% ylabel('Log Scale Efficiency (P_d_r_a_g/P_s_w_i_m)')
 
 % figure(4)
 % plot(ShellNumber, Efficiencies, 'o')

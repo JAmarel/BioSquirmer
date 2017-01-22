@@ -1,28 +1,27 @@
-function [fx, fy, Ux, Uy, W, Matrix, N] = ...
-    solve_U_enclosure(xcoord, ycoord, x_Enc, y_Enc, epsilon, VxRim, VyRim, NRim, Scale)
+function [fx, fy] = ...
+    enclosure_solve_U_disk_inactive(xcoord, ycoord, x_Enc, y_Enc, epsilon, NRim, Ux, Uy, W)
+%Inactive disk. Fnet !=0. With a surrounding enclosure
+%%% 
+% Ux, Uy, and W are the conjugate scenario variables.
+% We have freedom to choose them to be anything
+%So this script can be called three times to cycled through Ux = 1, Uy = 0
+%, W = 0...Ux = 0, Uy = 1, W = 0, and continuing with W = 1 ...
+%By calling it three times we can be a system of three equations and the
+%three unknowns corresponding to the beast parameters.
 
-%%% Now including rotation and enclosure.
-%%% Relaxed the force constraint on the enclosure (this constrain remains in solve_u_strict)
-%%% Non longer calculates an enclosure velocity
+%%% Goal here is to solve for the point forces that are responsible
+%%% for the input values Ux and Uy and W
 
-N = length([xcoord x_Enc]);   %%% number of blobs everywhere
-
-%%% make sure these are columns
-VxRim=VxRim(:);             %%% x-component of velocity at the rim of the disk                
-VyRim=VyRim(:);             %%% y-component of velocity at the rim of the disk
-NRim;                       %%% number of blobs on the rim of the disk
 Nbeast = length(xcoord); %%% Number of beast blobs
+N = length([xcoord x_Enc]);   %%% number of blobs everywhere
 NEnc = length(x_Enc);    %%% Number of enclosure blobs
+NRim;                       %%% number of blobs on the rim of the disk
 
 
-% xvect plays the same role as xcoord did before the enclosure was added
-% This adds the enclosure blobs to the system of equations
-% Now M11 and others can be calculated the same as before
 xvect = [x_Enc xcoord]; %%% Vectors containing all blob coordinates
 yvect = [y_Enc ycoord];
 
-
-%%% precompute distances between points i and j
+%%% precompute distances between points i and j in the disk 
 distance   = zeros([N, N]);  %%% distance between i-th and j-th blob
 alpha_par  = zeros([N, N]);
 alpha_perp = zeros([N, N]);
@@ -31,8 +30,8 @@ chihat_y = zeros([N, N]);    %%% y-component of unit vector from i-th blob to j-
 
 
 %Euler = - psi(1); 
-for i = 1 : N  %%% Pick a blob
-    for j = 1 : N  %%% run over all other blobs
+for i = 1 : N  %%% runs over blobs, the last Nrim blobs are on the disks's rim
+    for j = 1 : N  %%% runs over blobs
         if ( i ~= j )
             distance(i,j) = sqrt((xvect(i) - xvect(j))^2 + (yvect(i) - yvect(j))^2);
             chihat_x(i,j) = (xvect(i) - xvect(j))/distance(i,j);
@@ -101,29 +100,41 @@ M21 = zeros([N, N]);  %%% y-component of the vector field at point i due to x-le
  %%% y-component of the velocity field at point i on the circumference due to a y-levinslet
  %%% in the center of the circle
  
- %%% Now we need to form one big matrix for the system of equations
+ %%% Now we need to form one big matrix of the system of equations
  
-%format short
-%The matrix is complicated due to the addition of torque and constraints on the new enclosure points 
-Matrix = [M11 M12 [zeros([NEnc,1]); -ones([Nbeast,1])] zeros([N,1]) [zeros([NEnc,1]); (ycoord.'-ycoord(1))]; ...
-          M21 M22 zeros([N,1]) [zeros([NEnc,1]); -ones([Nbeast,1])] [zeros([NEnc,1]); (-(xcoord.' - xcoord(1)))]; ...
-          zeros([1,NEnc]) ones([1, Nbeast]) zeros([1, N]) 0 0 0; ...
-          zeros([1, N]) zeros([1,NEnc]) ones([1, Nbeast]) 0 0 0; ...
-          zeros([1,NEnc]) (ycoord-ycoord(1)) zeros([1,NEnc]) (-(xcoord - xcoord(1))) 0 0 0];
+%format short       
+Matrix = [M11 M12 ;...
+          M21 M22];
+
        
  %scondition = cond(Matrix);
  
+ %Inactive disk moves as a whole rigid object (all blobs same translational velocity)
+ %That is until we add in the rotational part
  
- c_coefs = [zeros([N-NRim,1]); VxRim; zeros([N-NRim,1]); VyRim; 0; 0; 0];
- % [[VxEnclosure; VxInner; VxRim]; [VyEnclosure; VyInner; VyRim]; FxBeast; FyBeast; TorqueBeast]
-
+ %Translational Motion
+ Ux = Ux * ones([Nbeast,1]);
+ Uy = Uy * ones([Nbeast,1]);
+ 
+ %Rotational Component
+ Vx = -W.*ycoord;
+ Vy = W.*xcoord;
+ 
+ %Join together
+ Ux = Ux + Vx.';
+ Uy = Uy + Vy.';
+ 
+ %Account for stationary enclosure blobs
+ Ux = [zeros([NEnc,1]); Ux];
+ Uy = [zeros([NEnc,1]); Uy];
+ c_coefs = [Ux; Uy];
+ 
  
  variables = Matrix\c_coefs;
  
- fx = variables(1:N);
- fy = variables(N+1:2*N);
- Ux = variables(2*N + 1);
- Uy = variables(2*N + 2);
- W  = variables(2*N + 3);
+ fx = variables(NEnc + 1:N);
+ fy = variables(N + NEnc +1:2*N);
+
+
 
 end

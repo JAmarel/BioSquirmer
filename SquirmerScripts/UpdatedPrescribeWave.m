@@ -1,6 +1,7 @@
 function [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta_o)
 %Prescribes single squirmer wave when the beast head is facing theta_o
-%according to the enclosure frame.
+%where theta_o is the angle of the beasts face as measured from the
+%horizontal x axis of the ring.
 
 %Also nondimensionalizes the wave by dividing through by B1/2 (or B2/2 if B1=0)
 
@@ -18,11 +19,14 @@ end
 
 %Nondimensionalize
 if B1 == 0
-    VxRim = VxRim./(B2/2);
-    VyRim = VyRim./(B2/2);
+    VxRim = VxRim./abs((B2/2));
+    VyRim = VyRim./abs((B2/2));
+elseif B1==0 && B2==0
+    VxRim = VxRim;
+    VyRim = VyRim;
 else
-    VxRim = VxRim./(B1/2);
-    VyRim = VyRim./(B1/2);
+    VxRim = VxRim./abs((B1/2));
+    VyRim = VyRim./abs((B1/2));
 end
 
 end

@@ -1,10 +1,16 @@
 function [fx, fy] = ...
     solve_U_disk_inactive(xcoord, ycoord, epsilon, NRim, Ux, Uy, W)
-%Inactive disk. Fnet !=0. Input Vrim = 0.
-%%% Now including rotation. M = 5x5
+%Inactive disk. Fnet !=0.
+%%% Unbounded domain
+% Ux, Uy, and W are the conjugate scenario variables.
+% We have freedom to choose them to be anything
+%So this script can be called three times to cycled through Ux = 1, Uy = 0
+%, W = 0...Ux = 0, Uy = 1, W = 0, and continuing with W = 1 ...
+%By calling it three times we can be a system of three equations and the
+%three unknowns corresponding to the beast parameters.
 
 %%% Goal here is to solve for the point forces that are responsible
-%%% for the input values Ux and Uy
+%%% for the input values Ux and Uy and W
 
 
 N = length(xcoord);   %%% number of blobs in the disk
@@ -115,7 +121,8 @@ Matrix = [M11 M12 ;...
  Vx = -W.*ycoord;
  Vy = W.*xcoord;
  
- %Join together
+ %Joining together accounts for the previously chosen translational and rotational
+ %speeds
  Ux = Ux + Vx.';
  Uy = Uy + Vy.';
 

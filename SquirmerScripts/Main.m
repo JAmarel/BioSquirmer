@@ -60,25 +60,25 @@ hold off
 % hold off
 
 %% Plot vector field   %Dimensions may be wrong in here. 
- figure(3)
- rectangle('Position',[-a, -a, 2*a, 2*a],...
-           'Curvature',[1,1],...
-           'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r')
- daspect([1,1,1])
- hold on
-
-x = [-2 * a :  0.15 * a : 2 * a]';  %%% make a column
-y =  -2 * a :  0.15 * a : 2 * a;    %%% make a row
-
-X = repmat(x, [1,length(y)]);   %%% form a matrix 
-Y = repmat(y, [length(x), 1]);  %%% form a matrix
-
-VX = VX_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
-VY = VY_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
-
-figure(3)
-quiver(X, Y, VX, VY, 'b')
-hold off
+%  figure(3)
+%  rectangle('Position',[-a, -a, 2*a, 2*a],...
+%            'Curvature',[1,1],...
+%            'LineWidth', 2, 'LineStyle', '-', 'EdgeColor', 'r')
+%  daspect([1,1,1])
+%  hold on
+% 
+% x = [-2 * a :  0.15 * a : 2 * a]';  %%% make a column
+% y =  -2 * a :  0.15 * a : 2 * a;    %%% make a row
+% 
+% X = repmat(x, [1,length(y)]);   %%% form a matrix 
+% Y = repmat(y, [length(x), 1]);  %%% form a matrix
+% 
+% VX = VX_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
+% VY = VY_FIELD_DISK(fx, fy, xcoord, ycoord, epsilon,  x, y);
+% 
+% figure(3)
+% quiver(X, Y, VX, VY, 'b')
+% hold off
 
 %%% Plot fluid velocity along phi=0 direction
 % span_r = linspace(0, 3*a, 30);
@@ -124,7 +124,7 @@ hold off
 %     titlestr = strcat({'Forces on Blobs at NR = '},{' '},{num2str(j)});
 %     title(titlestr);
 %     xlabel('Blob Coordinate Angle (Radians)')
-%     ylabel('Blob Force')
+%     ylabel('Reduced Force on Blob')
 %     legend('f_x','f_y')
 %     hold off
 % end

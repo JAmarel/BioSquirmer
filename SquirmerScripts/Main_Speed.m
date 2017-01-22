@@ -1,5 +1,5 @@
 %%Calculates/plots the speed for various nondimensional beast radii. Unbounded
-n = 10;
+n = 20; %Number of radii to sample
 Radii = logspace(-1.5,3.5,n); % logspace(a,b,n) generates n points between decades 10^a and 10^b.
 B1 = 1;
 B2 = 0;
@@ -25,7 +25,8 @@ for i=1:n
     
     
     [fx, fy, Ux, Uy] = solve_U_disk(xcoord, ycoord, epsilon, VxRim, VyRim, NRim); %Currently not calling the rotating solver.
-    %Use solve_U_disk_rot to allow rotational freedom.
+    %Use solve_U_disk_rot to allow rotational freedom. They agree when
+    %unbounded
 
 
     speed = sqrt(Ux^2 + Uy^2);
@@ -33,10 +34,11 @@ for i=1:n
     Speeds(i) = speed;
 end
 
-figure(2)
+figure(1)
 semilogx(Radii, Speeds, 'o')
 title('Swimming Speed vs. Radius','FontSize',16,'FontWeight','bold')
-xlabel('Log Scale Nondimensional Radius (a/l_s)')
-ylabel('Nondimensional Swimming Speed')
-%saveas(gcf,'SpeedvsRadius.png')
+xlabel('Nondimensional Beast Radius [a/l_s]')
+ylabel('Nondimensional Swimming Speed [v/(B_1/2)] ')
+saveas(gcf,'SpeedvsRadius.png')
+saveas(gcf,'SpeedvsRadius.eps')
 

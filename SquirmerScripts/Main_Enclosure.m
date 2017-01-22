@@ -2,13 +2,33 @@
 
 tic
 
-Time = 2;
+
+%These are scaled to become the default simulation time T and timestep
+%dt_o, although both will change depending on how dt is rescaled during the
+%simulation.
+Time = 70;
 Increment = 1;
 
-a_array = [1]; %[1e-3 1e-2 1 10];
-R_array = [10]; %[5 10 25]; This is actually R/a
-B2_array = [2]; %[-5 -1 0 1 5];
-B1_array = [1]; %[1 0];
+
+
+% a_array = [1 0.01 0.0001]; %[1e-3 1e-2 1 10];
+% R_array = [10]; %[5 10 25]; This is the ratio R/a
+% B2_array = [-1 0 1]; %[-5s -1 0 1 5];
+% B1_array = [1]; %[1 0];
+
+
+
+%When h ~=0 an if statement replaces the circular enclosure with a vertical
+%wall
+
+a_array = [0.1];
+R_array = [10];
+B2_array = [-1];
+B1_array = [0];
+
+h = 15*a; % h is the height of a vertical wall
+%that is placed symmetrically about the origin at a distance R to the
+%right of the origin
 
 FinishedLoopCount = 0;
 
@@ -39,9 +59,9 @@ for i = 1:length(a_array) %Cycle through beast radii
                 dt = Increment*a;  
 
                 %Initial Conditions
-                r_o = .7*R;         %%% Radial coordinate of beast cm from center of enclosure
-                phi_o = .3*pi/4;       %%% Angle coordinate of beast cm from center of enclosure
-                theta_o = .3*pi/4;   %%% Beast intial orientation (head direction in enclosure frame)
+                r_o = .3*R;         %%% Radial coordinate of beast cm from center of enclosure
+                phi_o = 0;       %%% Angle coordinate of beast cm from center of enclosure
+                theta_o = pi/3;   %%% Beast intial orientation (head direction in enclosure frame)
 
                 x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in enclosure frame.
                 y_o = r_o*sin(phi_o); %%% Beast CM Initial y position in enclosure frame.
@@ -70,6 +90,11 @@ for i = 1:length(a_array) %Cycle through beast radii
                 [x_Enc, y_Enc] = DiscretizeEnclosure(R,d);
                 %
                 
+                %Replace enclosure coordinates with wall if selected
+                if h ~= 0
+                    [x_Enc, y_Enc] = DiscretizeWall(R,s,h);
+                end
+                
                 NEnc = length(y_Enc);
                 
                 %Alternate enclosure discretization. Allows adjustments of
@@ -87,8 +112,12 @@ for i = 1:length(a_array) %Cycle through beast radii
                 x_head = xcoord(end - NRim + 1);
                 y_head = ycoord(end - NRim + 1);
 
+                
                 %Begin Simulation
-                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, x_history, Matrix_history]...
+                %Right now it returns way too much
+                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, ...
+                    dt_history, time_history, x_history, y_history, Matrix_history,x_cm_history_Recip, y_cm_history_Recip, ...
+                    separation_history_Recip,speed_history_Recip, W_history_Recip, x_history_Recip, y_history_Recip]...
                     = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale, B1, B2);
 
                 %For checking the speed relative to distance from edge.
@@ -128,72 +157,116 @@ for i = 1:length(a_array) %Cycle through beast radii
                     str_theta_o;
                     str_B1;
                     str_B2};
+                
+                descr = {'Parameters:';
+                    str_B1;
+                    str_B2};
 
                 %% Plot the cm trajectory
                 fig = figure(1);
                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
                 ax2 = axes('Position',[.3 .1 .6 .8]);
                 axes(ax1);
-                text(.025,0.6,descr);
+                text(.1,0.6,descr);
                 %back to data
                 axes(ax2);
 
-                scatter(x_cm_history(1), y_cm_history(1), '.', 'g'); %Begin at green
-                hold on
-                scatter(x_cm_history(end-1), y_cm_history(end-1), '.', 'r'); %End at red
                 scatter(x_cm_history(2:end-2), y_cm_history(2:end-2), '.', 'k');
+                hold on
+%                 scatter(x_cm_history_Recip(2:end-2), y_cm_history_Recip(2:end-2), '.', 'm');
+%                 legend('Boundary Element', 'Lorentz Reciprocal','Location','southwest');
+                scatter(x_cm_history(1), y_cm_history(1), '.', 'g'); %Begin at green
+                scatter(x_cm_history(end-1), y_cm_history(end-1), '.', 'y'); %End at yellow
+                
+                %Body. Inner then rim. At two points in time (1 and end)
+                scatter(x_history(end,1:Nbeast-NRim),y_history(end,1:Nbeast-NRim),'.','b')
+                scatter(x_history(end,Nbeast-NRim+1:end),y_history(end,Nbeast-NRim+1:end),'.','r')
+%                
+                scatter(x_history(1,1:Nbeast-NRim),y_history(1,1:Nbeast-NRim),'.','b')
+                scatter(x_history(1,Nbeast-NRim+1:end),y_history(1,Nbeast-NRim+1:end),'.','r')
+                
+                scatter(x_history(floor(end/2),1:Nbeast-NRim),y_history(floor(end/2),1:Nbeast-NRim),'.','b')
+                scatter(x_history(floor(end/2),Nbeast-NRim+1:end),y_history(floor(end/2),Nbeast-NRim+1:end),'.','r')
+                
+                %Head
+                scatter(x_history(end,Nbeast - NRim + 1),y_history(end,Nbeast - NRim + 1),400,'.','m')
+                scatter(x_history(1,Nbeast - NRim + 1),y_history(1,Nbeast - NRim + 1),400,'.','m')
+                scatter(x_history(floor(end/2),Nbeast - NRim + 1),y_history(floor(end/2),Nbeast - NRim + 1),400,'.','m')
+                
+                %Lorentz data
+                
+%                  scatter(x_cm_history_Recip(1), y_cm_history_Recip(1), '.', 'g'); %Begin at green
+%                  scatter(x_cm_history_Recip(end-1), y_cm_history_Recip(end-1), '.', 'r'); %End at red
+                
+                %Body
+%                 scatter(x_history_Recip(3,:),y_history_Recip(3,:),'.')
+%                 scatter(x_history_Recip(1,:),y_history_Recip(1,:),'.')
+                %Head
+%                 scatter(x_history_Recip(3,Nbeast - NRim + 1),y_history_Recip(3,Nbeast - NRim + 1),'.')
+%                 scatter(x_history_Recip(1,Nbeast - NRim + 1),y_history_Recip(1,Nbeast - NRim + 1),'.')
+                
+
+                
+                
+                
                 daspect([1,1,1])
-                scatter(x_Enc, y_Enc, '.', 'b');
+                scatter(x_Enc, y_Enc, '.');
                 axis off
                 hold off
                 title1 = ['trajectory' num2str(i) num2str(j) num2str(k) num2str(m)];
                 saveas(gcf,title1, 'png')
+                saveas(gcf,title1, 'eps')
                 %% Plotting velocity vs separation
 %                 fig = figure(2);
-%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
-%                 ax2 = axes('Position',[.3 .1 .6 .8]);
-%                 axes(ax1);
-%                 text(.025,0.6,descr);
-%                 %back to plotting data
-%                 axes(ax2);
+% %                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% %                 ax2 = axes('Position',[.3 .1 .6 .8]);
+% %                 axes(ax1);
+% %                 text(.025,0.6,descr);
+% %                 %back to plotting data
+% %                 axes(ax2);
 %                 hold on
 %                 scatter(separation_history(2:end-1), speed_history(2:end-1));
-%                 title('Swimming Speed vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
-%                 xlabel('Nondimensional Separation Distance (a/l_s)')
-%                 ylabel('Nondimensional Swimming Speed')
+%                 scatter(separation_history_Recip(2:end-1), speed_history_Recip(2:end-1));
+%                 legend('Boundary Element', 'Lorentz Reciprocal', 'Location','northeast');
+%                 xlabel('Nondimensional Separation Distance [a/l_s]')
+%                 ylabel('Nondimensional Swimming Speed [U/(B_1/2)]')
 %                 hold off
 %                 title2 = ['speed' num2str(i) num2str(j) num2str(k) num2str(m)];
 %                 saveas(gcf,title2, 'png')
+%                 saveas(gcf,title2, 'eps')
                 %% Plotting angular velocity vs separation
 %                 fig = figure(3);
-%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
-%                 ax2 = axes('Position',[.3 .1 .6 .8]);
-%                 axes(ax1);
-%                 text(.025,0.6,descr);
-%                 %back to plotting data
-%                 axes(ax2);
+% %                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% %                 ax2 = axes('Position',[.3 .1 .6 .8]);
+% %                 axes(ax1);
+% %                 text(.025,0.6,descr);
+% %                 %back to plotting data
+% %                 axes(ax2);
 %                 hold on
 %                 scatter(separation_history(2:end-1), W_history(2:end-1));
-%                 title('Angular velocity vs. Distance from Enclosure Wall','FontSize',16,'FontWeight','bold')
+%                 scatter(separation_history_Recip(2:end-1), W_history_Recip(2:end-1));
+%                 legend('Boundary Element', 'Lorentz Reciprocal', 'Location','northeast');
 %                 xlabel('Nondimensional Separation Distance (a/l_s)')
-%                 ylabel('Nondimensional Angular Velocity')
+%                 ylabel('Nondimensional Angular Velocity [\Omega /(B_1/2)]')
 %                 hold off
 %                 title3 = ['angular' num2str(i) num2str(j) num2str(k) num2str(m)];
 %                 saveas(gcf,title3, 'png')
+%                 saveas(gcf,title3, 'eps')
                 %% Plotting separation vs simulation time
 %                 fig = figure(4);
-%                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
-%                 ax2 = axes('Position',[.3 .1 .6 .8]);
-%                 axes(ax1);
-%                 text(.025,0.6,descr);
-%                 %back to plotting data
-%                 axes(ax2);
+% %                 ax1 = axes('Position',[0 0 1 1],'Visible','off');
+% %                 ax2 = axes('Position',[.3 .1 .6 .8]);
+% %                 axes(ax1);
+% %                 text(.025,0.6,descr);
+% %                 %back to plotting data
+% %                 axes(ax2);
 %                 scatter(time_history(2:end-1), separation_history(2:end-1));
-%                 title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
-%                 xlabel('Nondimensional Time')
-%                 ylabel('Nondimensional Separation')
+%                 %title('Distance from Enclosure Wall vs Time','FontSize',16,'FontWeight','bold')
+%                 xlabel('Nondimensional Time [(B_1/(2 l_s) t]')
+%                 ylabel('Nondimensional Separation [a/l_s]')
 %                 title4 = ['separation' num2str(i) num2str(j) num2str(k) num2str(m)];
 %                 saveas(gcf,title4, 'png')
+%                 saveas(gcf,title4, 'eps')
             end
         end
     end

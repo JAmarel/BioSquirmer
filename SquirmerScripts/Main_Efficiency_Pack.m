@@ -18,7 +18,7 @@ for i=1:n
         %%% spacing between neighboring blobs
     d = CircumSpacing(i);          %%% blob spacing
       
-    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk_Pack(a,s,d);
+    [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk_Pack(a,s);
     
     Nblobs = sum(BlobsPerLayer); %%% total number of blobs 
     NR = length(BlobsPerLayer); %%% Number of radial layers
