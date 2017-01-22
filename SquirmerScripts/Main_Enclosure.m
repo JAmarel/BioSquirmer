@@ -22,11 +22,11 @@ Increment = 1;
 %wall
 
 a_array = [0.1];
-R_array = [10];
+R_array = [50];
 B2_array = [-1];
-B1_array = [0];
+B1_array = [1];
 
-h = 15*a; % h is the height of a vertical wall
+h = 0*a; % h is the height of a vertical wall
 %that is placed symmetrically about the origin at a distance R to the
 %right of the origin
 
@@ -45,7 +45,7 @@ for i = 1:length(a_array) %Cycle through beast radii
                 B2 = B2_array(k);
                 B1 = B1_array(m);
                 
-                s = 0.1 * a;          %%% radial spacing between neighboring blobs
+                s = 0.2 * a;          %%% radial spacing between neighboring blobs
                 epsilon = s/8;        %%% radius of blobs
                 
                 %%%Needs to be implemented into solve_U_enclosure
