@@ -6,21 +6,18 @@ tic
 %These are scaled to become the default simulation time T and timestep
 %dt_o, although both will change depending on how dt is rescaled during the
 %simulation.
-Time = 35;
-Increment = 0.5;
+Time = 300;
+Increment = 1;
 
 %When h ~=0 an if statement replaces the circular enclosure with a vertical
 %wall
 
-theta_o_array = [pi/10 -pi/10 pi/7 -pi/7 pi/4 -pi/4 pi/3 -pi/3 0 pi];
-r_o_array = [0.5 0.7 0.85]; %Ratio r_o/R
-a_array = [1e-3 1e-1 1e1]; % radius of the disk nondimensionalized by the Saffman length
-B2_array = [-1 1];
 
-theta_o_array = [pi/10 -pi/10 pi/7 -pi/7 pi/4 -pi/4 pi/3 -pi/3 0 pi];
-r_o_array = [0.8]; 
-a_array = [1e-3]; % radius of the disk nondimensionalized by the Saffman length (a/l_s)
-B2_array = [-1];
+
+theta_o_array = [pi/4];
+r_o_array = [4]; %Initial separation between beast center and wall in units of beast radius (a).
+a_array = [.2]; % radius of the disk nondimensionalized by the Saffman length (a/l_s)
+B2_array = [1];
 
 B1 = 0;
 
@@ -33,17 +30,24 @@ Steps = floor(Time/Increment);
 x_cm_trajectories = zeros([Steps+1,length(theta_o_array)]);
 y_cm_trajectories = zeros([Steps+1,length(theta_o_array)]);
 
+Ux_histories = zeros([Steps+1,length(theta_o_array)]);
+Uy_histories = zeros([Steps+1,length(theta_o_array)]);
+W_histories = zeros([Steps+1,length(theta_o_array)]);
+
+
+time_histories = zeros([Steps+1,length(theta_o_array)]);
+
 
 
 for i = 1:length(a_array) %Cycle through initial orientation
-            R = 10; %Place enclosure R*a distance to the right of the origin
-            h = 15; % Ratio h/a
+            R = 10; %x coordinate of vertical wall in units of (a).
+            h = 40; %Length of vertical wall (centered about origin) in units of (a)
             
             a = a_array(i);  %%% radius of the disk nondimensionalized by the Saffman length
             R = R*a;  %Rescale in terms of a
             h = h*a;
             
-            s = 0.4 * a;          %%% radial spacing between neighboring blobs
+            s = 0.2 * a;          %%% radial spacing between neighboring blobs
             epsilon = s/8;        %%% radius of blobs
 
             %%%Needs to be implemented into solve_U_enclosure
@@ -59,7 +63,7 @@ for i = 1:length(a_array) %Cycle through initial orientation
             B2 = B2_array(j);
             
         for k = 1:length(r_o_array) %Cycle reduced radius
-            r_o = r_o_array(k)*R;   %Place beast radial distance r_o*R from the origin
+            r_o = r_o_array(k)*a;   %Place beast radial distance r_o*R from the origin
                             
             for m = 1:length(theta_o_array) %Cycle initial orientation
                 close all
@@ -69,18 +73,13 @@ for i = 1:length(a_array) %Cycle through initial orientation
 
                 
 
-                %Initial Conditions
+                %Initial Position   
+                x_o = R - r_o; %%% Beast CM initial x position as seen in lab frame.
+                y_o = 0; %%% Beast CM Initial y position in lab frame.
 
-                phi_o = 0;       %%% Angle coordinate of beast cm from origin
                 
-                x_o = r_o*cos(phi_o); %%% Beast CM initial x position as seen in lab frame.
-                y_o = r_o*sin(phi_o); %%% Beast CM Initial y position in lab frame.
-
-
-
-
                 %Coordinates of beast blobs in beast frame.
-                %This places a beast in the center of the enclosure.
+                %This places a beast in the center of the lab.
                 [xcoord, ycoord, BlobsPerLayer] = DiscretizeDisk(a,s);
 
                 Nbeast = sum(BlobsPerLayer); %%% Number of blobs in the beast
@@ -93,27 +92,11 @@ for i = 1:length(a_array) %Cycle through initial orientation
                 %And Rotate velocities according to theta_o into enc frame.
                 [VxRim, VyRim] = UpdatedPrescribeWave(NRim, B1, B2, theta_o);
 
-                %Enclosure Blob Coordinates.
-                %Enclosure is a ring centered about the origin.
-                
-                % Primary Enclosure Discretization
-                d = s; %Enclosure blob spacing same as beast blob spacing
-                [x_Enc, y_Enc] = DiscretizeEnclosure(R,d);
-                %
-                
-                %Replace enclosure coordinates with wall if selected
-                if h ~= 0
-                    [x_Enc, y_Enc] = DiscretizeWall(R,s,h);
-                end
-                
+       
+                %Wall coordinates
+                [x_Enc, y_Enc] = DiscretizeWall(R,s,h);                
                 NEnc = length(y_Enc);
                 
-                %Alternate enclosure discretization. Allows adjustments of
-                %the number of enclosure blobs. (Thought this might help
-                %with collisions.)
-%                 Nencl = 500;
-%                 x_Enc = R * cos(linspace(0, 2*pi, Nencl));
-%                 y_Enc = R * sin(linspace(0, 2*pi, Nencl));
 
                 %Translate beast geometric center to the chosen initial position in enclosure frame.
                 xcoord = xcoord + x_o;
@@ -125,11 +108,9 @@ for i = 1:length(a_array) %Cycle through initial orientation
 
                 
                 %Begin Simulation
-                %Right now it returns way too much
-                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, ...
-                    dt_history, time_history, x_history, y_history, Matrix_history,x_cm_history_Recip, y_cm_history_Recip, ...
-                    separation_history_Recip,speed_history_Recip, W_history_Recip, x_history_Recip, y_history_Recip]...
-                    = TimeAdvance(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale, B1, B2);
+                [Ux_history, Uy_history, W_history, theta_history, x_cm_history, y_cm_history, separation_history, dt_history, time_history, ...
+                    x_history, y_history]...
+                = TimeAdvance_Wall(T, dt, xcoord, ycoord, x_Enc, y_Enc, theta_o, epsilon, VxRim, VyRim, NRim, R, a, Scale);
 
                 %For checking the speed relative to distance from edge.
                 speed_history = (Uy_history.^2 + Ux_history.^2).^(1/2);
@@ -141,10 +122,40 @@ for i = 1:length(a_array) %Cycle through initial orientation
                 
                 x_cm_trajectories(:,m) = x_cm_history;
                 y_cm_trajectories(:,m) = y_cm_history;
+                
+                Ux_histories(:,m) = Ux_history;
+                Uy_histories(:,m) = Uy_history;
+                W_histories(:,m) = W_history;
+                
+                time_histories(:,m) = time_history;
+                
+                %% Crowdy Velocities (Equation 17)
+                
+                Crowdy_angle = zeros([Steps+1,1]);
+                % Crowdy coordinates are slightly different
+                % In the paper y plays the role of separation between beast center and wall. This is associated with coordinate x in the code.
+                % Similarly, coordinate y in the code is equivalent to coordinate x in Crowdy paper
+                % In the code, theta is measured off the horizontal (perpendicular to the wall)
+                % While in Crowdy, theta is measured increasing ccw from a line parallel to the wall in (his) positive x direction
+                
+                for q = 1:length(theta_history)
+                    if theta_history(q)>=pi/2
+                        Crowdy_angle(q) = theta_history(q) - pi/2;
+                    else
+                        Crowdy_angle(q) = theta_history(q) + 3*pi/2;
+                    end
+                end
+                theta_history = Crowdy_angle; %being lazy here
+                
+                %Writing explicitly the Crowdy formulas as in paper, will swap x and y later to match with code
+                Ux_crowdy = -a*(sin(2.*theta_history(1:end-1))./separation_history(1:end-1)).*(1-(a^2)./(2*separation_history(1:end-1).^2));
+                Uy_crowdy = a*(cos(2.*theta_history(1:end-1))./separation_history(1:end-1)).*(1-(a^2)./(separation_history(1:end-1).^2));
+                
+                W_crowdy = (a^2)*(sin(2.*theta_history(1:end-1))./(2*separation_history(1:end-1).^2)).*(1-(3*a^2)./(2*separation_history(1:end-1).^2));
 
                 toc
-            end
-                            %% Create some strings for plot detail
+                
+                %% Create some strings for plot detail
                 str_T = ['Total Time = ',num2str(T)];
                 str_dt = ['Base dt = ',num2str(dt)];
                 str_Time = 'Nondimen by B_1/(2*l_s)';
@@ -152,7 +163,7 @@ for i = 1:length(a_array) %Cycle through initial orientation
                 str_s = ['s = ',num2str(s)];
                 str_eps = ['epsilon = ',num2str(epsilon)];
                 str_R = ['R = ',num2str(R)];
-                str_r_o = ['r_o = ',num2str(r_o)];
+                str_r_o = ['r_o = ',num2str(r_o/a)];
                 str_phi_o = ['phi_o = ',num2str(phi_o)];
                 str_theta_o = ['theta_o = ',num2str(theta_o)];
                 str_B1 = ['B1 = ',num2str(B1)];
@@ -176,8 +187,100 @@ for i = 1:length(a_array) %Cycle through initial orientation
                     str_B1;
                     str_B2;
                     str_a;
+                    str_r_o};
+                
+                descr2 = {'Parameters:';
+                    str_B1;
+                    str_B2;
+                    str_a;
                     str_r_o;
-                    str_R};
+                    str_theta_o};
+                
+                %% Plot x velocity
+                fig = figure(2);
+                ax1 = axes('Position',[0 0 1 1],'Visible','off');
+                ax2 = axes('Position',[.3 .1 .6 .8]);
+                axes(ax1);
+                text(0.01,0.6,descr2);
+                %back to data
+                axes(ax2);
+
+                
+                hold on
+                
+                %Plotting velocities against simulation time
+                scatter(time_history(2:end-1), Ux_history(2:end-1), '.', 'b');
+                scatter(time_history(2:end-1), Uy_crowdy(2:end), '.', 'r');
+                
+                legend('Boundary','Crowdy','Location','best')
+                
+                xlabel('Simulation Time') % x-axis label
+                ylabel('Horizontal Swimming Speed') % y-axis label
+                      
+                hold off
+                title2 = ['WALLxvelocities' num2str(i) num2str(j) num2str(k) num2str(m)];
+                saveas(gcf,title2, 'png')
+                saveas(gcf,title2, 'eps')
+                saveas(gcf,title2, 'fig')
+                
+                %% Plot y velocity
+                fig = figure(3);
+                ax1 = axes('Position',[0 0 1 1],'Visible','off');
+                ax2 = axes('Position',[.3 .1 .6 .8]);
+                axes(ax1);
+                text(0.01,0.6,descr2);
+                %back to data
+                axes(ax2);
+
+      
+                hold on
+                
+                %Plotting velocities against simulation time
+                scatter(time_history(2:end-1), Uy_history(2:end-1), '.', 'b');
+                scatter(time_history(2:end-1), Ux_crowdy(2:end), '.', 'r');
+                
+                legend('Boundary','Crowdy','Location','best')
+                
+                xlabel('Simulation Time') % x-axis label
+                ylabel('Vertical Swimming Speed') % y-axis label
+                      
+                hold off
+                title2 = ['WALLyvelocities' num2str(i) num2str(j) num2str(k) num2str(m)];
+                saveas(gcf,title2, 'png')
+                saveas(gcf,title2, 'eps')
+                saveas(gcf,title2, 'fig')
+                
+                %% Plot w velocity
+                fig = figure(4);
+                ax1 = axes('Position',[0 0 1 1],'Visible','off');
+                ax2 = axes('Position',[.3 .1 .6 .8]);
+                axes(ax1);
+                text(0.01,0.6,descr2);
+                %back to data
+                axes(ax2);
+
+                
+                hold on
+                
+                %Plotting velocities against simulation time
+                scatter(time_history(2:end-1), W_history(2:end-1), '.', 'b');
+                scatter(time_history(2:end-1), W_crowdy(2:end), '.', 'r');
+                
+                legend('Boundary','Crowdy','Location','best')
+                
+                xlabel('Simulation Time') % x-axis label
+                ylabel('Angular Velocity') % y-axis label
+                      
+                hold off
+                title2 = ['WALLwvelocities' num2str(i) num2str(j) num2str(k) num2str(m)];
+                saveas(gcf,title2, 'png')
+                saveas(gcf,title2, 'eps')
+                saveas(gcf,title2, 'fig')
+                
+                
+                
+            end
+
 
                 %% Plot the cm trajectory
                 fig = figure(1);
@@ -198,29 +301,29 @@ for i = 1:length(a_array) %Cycle through initial orientation
                     scatter(x_cm_trajectories(end,n), y_cm_trajectories(end,n),'o','r'); %End at red
                     
                     %Body. Inner then rim. At two points in time (1 and end)
-                    %scatter(x_history(end,1:Nbeast-NRim),y_history(end,1:Nbeast-NRim),'.','b')
-                    %scatter(x_history(end,Nbeast-NRim+1:end),y_history(end,Nbeast-NRim+1:end),'.','r')
-                    %scatter(x_history(1,1:Nbeast-NRim),y_history(1,1:Nbeast-NRim),'.','b')
-                    %scatter(x_history(1,Nbeast-NRim+1:end),y_history(1,Nbeast-NRim+1:end),'.','r')
+                    scatter(x_history(end,1:Nbeast-NRim),y_history(end,1:Nbeast-NRim),'.','b')
+                    scatter(x_history(end,Nbeast-NRim+1:end),y_history(end,Nbeast-NRim+1:end),'.','r')
+                    scatter(x_history(1,1:Nbeast-NRim),y_history(1,1:Nbeast-NRim),'.','b')
+                    scatter(x_history(1,Nbeast-NRim+1:end),y_history(1,Nbeast-NRim+1:end),'.','r')
 
                     %Head
-                    %scatter(x_history(end,Nbeast - NRim + 1),y_history(end,Nbeast - NRim + 1),400,'.','m')
-                    %scatter(x_history(1,Nbeast - NRim + 1),y_history(1,Nbeast - NRim + 1),400,'.','m')
+                    scatter(x_history(end,Nbeast - NRim + 1),y_history(end,Nbeast - NRim + 1),400,'.','m')
+                    scatter(x_history(1,Nbeast - NRim + 1),y_history(1,Nbeast - NRim + 1),400,'.','m')
 
                     
                 end
                 
 
-                
+                scatter(x_Enc, y_Enc, '.','b');
                 
                 daspect([1,1,1])
-                scatter(x_Enc, y_Enc, '.','b');
+
                 
 
                 
                 axis off
                 hold off
-                title1 = ['trajectory' num2str(i) num2str(j) num2str(k) num2str(m)];
+                title1 = ['WALLtrajectory' num2str(i) num2str(j) num2str(k) num2str(m)];
                 saveas(gcf,title1, 'png')
                 saveas(gcf,title1, 'eps')
                 saveas(gcf,title1, 'fig')

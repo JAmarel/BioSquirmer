@@ -63,6 +63,7 @@ fx_history(1,:) = 0;
 fy_history(1,:) = 0;
 time_history(1,:) = 0;
 separation_history(1,:) = R - sqrt(xcoord(1)^2 + ycoord(1)^2) - a;
+separation_history(1,:) = R - abs(xcoord(1)); %Change for wall scenario
 
 
 
@@ -191,7 +192,7 @@ Matrix_history{i} = Matrix;
 %%% Scaling timesteps based on distance from enclosure.
 %%% Smaller steps when near the edge
     r_cm_history(i) = sqrt(x_cm_history(i)^2 + y_cm_history(i)^2); %Beast CM
-    separation_history(i) = R - (r_cm_history(i) + a); %+a to get the blob nearest the edge
+    separation_history(i) = R - (abs(x_cm_history(i))); %+a to get the blob nearest the edge
 %     if separation_history(i) < .5*a
 %         dt = dt_o/100;
 %     elseif separation_history(i) < 1.5*a
@@ -204,7 +205,7 @@ Matrix_history{i} = Matrix;
 %     
 
 % modified version for the wall
-    separation_history(i) = R - (x_cm_history(i) + a); %+a to get the blob nearest the edge
+    %separation_history(i) = R - (x_cm_history(i) + a); %+a to get the blob nearest the edge
     if separation_history(i) < 0.2*a
         dt = dt_o/10;
     elseif separation_history(i) < 0.5*a
